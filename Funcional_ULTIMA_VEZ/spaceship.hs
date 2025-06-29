@@ -1,6 +1,6 @@
-data Component = Cargo | Engine | Shield | Cannon
+data Component = Cargo | Engine | Shield | Cannon deriving (Show)
 
-data Spaceship = Module Component Spaceship Spaceship | Plug
+data Spaceship = Module Component Spaceship Spaceship | Plug deriving (Show)
 
 data Direction = Larboard | Starboard
 
@@ -8,7 +8,17 @@ data Size = Small | Big | Torpedo
 
 type Hazard = (Direction, Int, Size)
 
-nave = Module Engine (Module Engine Plug Plug) Plug
+nave = Module Engine (Module Shield Plug Plug) (Module Engine Plug Plug)
+
+nave2 = Module Cargo (Module Engine Plug Plug) Plug
+
+nave3 = Module Cargo (Module Cargo Plug Plug) (Module Cargo Plug Plug)
+
+naveLarga = Module Engine (Module Shield (Module Cargo (Module Cannon Plug Plug) Plug) (Module Engine Plug Plug))
+                          (Module Cannon Plug Plug)
+
+naves = [nave, nave2,nave3]
+
 
 
 -- que indica si la nave posee al menos un generador de campos de fuerza
@@ -31,29 +41,68 @@ esCannon _      = False
 -- que retorna el poder de propulsion de una nave.
 thrust :: Spaceship -> Int
 thrust Plug                 = 0
-thrust (Module c Plug Plug) = 1
+thrust (Module c Plug Plug) = sumarSiesMotor c
 thrust (Module c sp sp')    = thrust sp + thrust sp'
 
+sumarSiesMotor :: Component -> Int
+sumarSiesMotor Engine = 1
+sumarSiesMotor _      = 0
+
 -- que devuelve la nave resultante de desprender los modulos dependientes del modulo donde se recibe un impacto
--- (esta funcion asume que se produce el impacto).
-wreck :: Hazard -> Spaceship -> Spaceship
-wreck 
-wreck
+-- esta funcion asume que se produce el impacto.
+-- wreck :: Hazard -> Spaceship -> Spaceship
+-- wreck h spaceShip = wreck' h spaceShip
 
-wreck :: Hazard -> Spaceship -> Spaceship
-wreck h s = let h' = shootHazardIf h (armed s)
-             in if isSmallH h && shielded s then s else wreck' h' s
+-- wreck' :: Hazard -> Spaceship -> Spaceship
+-- wreck' 
 
-shootHazardIfArmed :: Hazard -> Bool -> Hazard
-shootHazardIfArmed (d,n,Big) True = (d,n,Small)
-shootHazardIfArmed h         _    = h
+-- ## Ejercicio 2 ##
 
-isSmallH (Small,_,_) = True
-isSmallH _           = False
+foldSS :: b -> (Component -> b -> b -> b) -> Spaceship -> b
+foldSS fp fm Plug            = fp
+foldSS fp fm (Module c s s') = fm c (foldSS fp fm s) (foldSS fp fm s')
 
-wreck' :: Hazard -> Spaceship -> Spaceship
-wreck' _       Plug             = Plug
-wreck' (d,1,s) _                = Plug
-wreck' (d,n,s) (Module c s1 s2) = case d of
-  Larboard  -> Module c (wreck' (d,n,s) s1) s2
-  Starboard -> Module c s1 (wreck' (d,n,s) s2)
+recSS :: b -> (Component -> Spaceship -> Spaceship -> b -> b -> b) -> Spaceship -> b
+recSS fp fm Plug            = fp
+recSS fp fm (Module c s s') = fm c s s' (recSS fp fm s) (recSS fp fm s')
+
+-- ## Ejercicio 3 ##
+
+capacity :: Spaceship -> Int
+capacity = foldSS 0 (\c n n' -> esCarga c + n + n')
+
+esCarga :: Component -> Int
+esCarga Cargo = 1
+esCarga _     = 0
+
+largest :: [Spaceship] -> Spaceship
+largest = foldr maximumCapacity Plug
+
+maximumCapacity :: Spaceship -> Spaceship -> Spaceship
+maximumCapacity sp sp' = if capacity sp > capacity sp'
+                            then sp
+                            else sp'
+
+
+
+-- que dada una nave retorna su alto y ancho (pensando el alto como la cantidad de componentes
+-- de la rama mas larga y el ancho como la cantidad de componentes del nivel mas ancho).
+-- dimensions :: Spaceship -> (Int,Int)
+-- dimensions = appFork (heightSS, )
+
+heightSS :: Spaceship -> Int
+heightSS = foldSS 0 (\c s1 s2 -> 1 + max s1 s2)
+
+componentPerLevel :: Spaceship -> [[Component]]
+componentPerLevel = 
+
+listPerLevel :: Tree a -> [[a]]
+listPerLevel EmptyT          = []
+listPerLevel (NodeT x t1 t2) = [x] : concatPerLevel (listPerLevel t1) (listPerLevel t2)
+
+concatPerLevel :: [[a]] -> [[a]] -> [[a]]
+concatPerLevel [] yss            = yss
+concatPerLevel xss []            = xss
+concatPerLevel (xs:xss) (ys:yss) = (xs ++ ys) : concatPerLevel xss yss
+
+appFork (f, g) x = (f x, g x)
