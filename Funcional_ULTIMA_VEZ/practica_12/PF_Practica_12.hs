@@ -197,6 +197,11 @@ juntarNiveles [] yss            = yss
 juntarNiveles xss []            = xss
 juntarNiveles (xs:xss) (ys:yss) = (xs ++ ys) : (juntarNiveles xss yss)
 
+juntarNiveles' :: [[a]] -> [[a]] -> [[a]]
+juntarNiveles' = foldr (\xs xss yss -> case yss of 
+                                      [] -> xss yss
+                                      (ys:yss') -> (xs ++ ys) : xss yss') id
+
 todosLosNivelesC :: Tree a -> [[a]]
 todosLosNivelesC = foldT [] (\x xss yss -> if null xss && null yss
                                             then [[x]]
