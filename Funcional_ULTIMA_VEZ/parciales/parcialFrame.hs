@@ -101,141 +101,151 @@ tiemposDeEspera' = recA (\d -> contarHasta d)
                         (\a a' t t'-> combinarSinDuplicados t t')
 
 -- 3 Demostracion
-para todo k >= 0. duracion . (alargar k) = (k*) . duracion
-por ppio de extensionalidad
-para todo k >= 0. para todo anim. (duracion . (alargar k)) anim = ((k*) . duracion) anim ?
-por def de (.) dos veces.
-para todo k >= 0. para todo anim. duracion (alargar k anim) = k * (duracion anim) ?
-sea k' de tipo Int y anim' de tipo Animacion a, por ppio de induccion sobre la estructura de anim', es equivalente demostrar que:
+-- para todo k >= 0. duracion . (alargar k) = (k*) . duracion
+-- por ppio de extensionalidad
+-- para todo k >= 0. para todo anim. (duracion . (alargar k)) anim = ((k*) . duracion) anim ?
+-- por def de (.) dos veces.
+-- para todo k >= 0. para todo anim. duracion (alargar k anim) = k * (duracion anim) ?
+-- sea k' de tipo Int y anim' de tipo Animacion a, por ppio de induccion sobre la estructura de anim', es equivalente demostrar que:
 
-CASO BASE 1: anim' = Espera d)
+-- CASO BASE 1: anim' = Espera d)
 
-duracion (alargar k (Espera d)) = k * (duracion (Espera d)) ?
+-- duracion (alargar k (Espera d)) = k * (duracion (Espera d)) ?
 
-CASO BASE 2: anim' = Mov d act)
+-- CASO BASE 2: anim' = Mov d act)
 
-duracion (alargar k (Mov d act)) = k * (duracion (Mov d act)) ?
+-- duracion (alargar k (Mov d act)) = k * (duracion (Mov d act)) ?
 
-CASO INDUCTIVO 1: anim' = Sec a a')
+-- CASO INDUCTIVO 1: anim' = Sec a a')
 
-HI1) duracion (alargar k a) = k * (duracion a) !
-HI2) duracion (alargar k a') = k * (duracion a') !
-TI) duracion (alargar k (Sec a a')) = k * (duracion (Sec a a')) ?
+-- HI1) duracion (alargar k a) = k * (duracion a) !
+-- HI2) duracion (alargar k a') = k * (duracion a') !
+-- TI) duracion (alargar k (Sec a a')) = k * (duracion (Sec a a')) ?
 
-CASO INDUCTIVO 2: anim' = Par a a')
+-- CASO INDUCTIVO 2: anim' = Par a a')
 
-HI1) duracion (alargar k a) = k * (duracion a) !
-HI2) duracion (alargar k a') = k * (duracion a') !
-TI) duracion (alargar k (Par a a')) = k * (duracion (Par a a')) ?
+-- HI1) duracion (alargar k a) = k * (duracion a) !
+-- HI2) duracion (alargar k a') = k * (duracion a') !
+-- TI) duracion (alargar k (Par a a')) = k * (duracion (Par a a')) ?
 
-CASO BASE 1:
+-- CASO BASE 1:
 
-LI)
+-- LI)
 
-duracion (alargar k (Espera d))
-        ----------------------
-=                               def alargar
-duracion (Espera (k * d))
--------------------------
-=                               def duracion
-(k * d)
-
-
-LD)
-
-k * (duracion (Espera d))
-    ---------------------
-=                               def duracion
-k * d
+-- duracion (alargar k (Espera d))
+--         ----------------------
+-- =                               def alargar
+-- duracion (Espera (k * d))
+-- -------------------------
+-- =                               def duracion
+-- (k * d)
 
 
-CASO BASE 2:
+-- LD)
 
-LI)
-
-duracion (alargar k (Mov d act))
-         ----------------------
-=                               def alargar
-duracion (Mov (k * d) act)
---------------------------
-=                               def duracion
-(k * d)
+-- k * (duracion (Espera d))
+--     ---------------------
+-- =                               def duracion
+-- k * d
 
 
-LD)
+-- CASO BASE 2:
 
-k * (duracion (Mov d act))
-    ---------------------
-=                               def duracion
-k * d
+-- LI)
 
-CASO INDUCTIVO 1:
-
-LI)
-
-duracion (alargar k (Sec a a'))
-         ----------------------
-=                               def alargar
-duracion (Sec (alargar k a) (alargar k a'))
--------------------------------------------
-=                               def duracion
-duracion(alargar k a) + duracion(alargar k a')
----------------------   ----------------------
-=                               H1, H2
-k * (duracion a) + k * (duracion a')
--------------------------------------
-=                               factor comun
-k * (duracion a + duracion a')
+-- duracion (alargar k (Mov d act))
+--          ----------------------
+-- =                               def alargar
+-- duracion (Mov (k * d) act)
+-- --------------------------
+-- =                               def duracion
+-- (k * d)
 
 
-LD)
+-- LD)
 
-k * (duracion (Sec a a'))
-    ---------------------
-=                               def duracion
-k * (duracion a + duracion a')
+-- k * (duracion (Mov d act))
+--     ---------------------
+-- =                               def duracion
+-- k * d
 
-CASO INDUCTIVO 2:
+-- CASO INDUCTIVO 1:
 
-LI)
+-- LI)
 
-duracion (alargar k (Par a a'))
-         ---------------------
-=                               def alargar
-duracion (Par (alargar k a) (alargar k a'))
--------------------------------------------
-=                               def duracion
-max (duracion(alargar k a)) (duracion(alargar k a'))
-    ----------------------  ------------------------
-=                               HI1, HI2
-max (k * (duracion a)) (k * (duracion a'))
-------------------------------------------
-=                               def max
-if (k * (duracion a)) >= (k * (duracion a')) then (k * (duracion a)) else (k * (duracion a'))
----------------------------------------------------------------------------------------------
-=                               lema if-else
-k * (if duracion a >= duracion a' then duracion a else duracion a')
-
-LD)
-
-k * (duracion (Par a a'))
-    ---------------------
-=                               def duracion
-k * max (duracion a) (duracion a')
-    ------------------------------
-=                               def max
-k * (if (duracion a) >= (duracion a') then (duracion a) else (duracion a'))
+-- duracion (alargar k (Sec a a'))
+--          ----------------------
+-- =                               def alargar
+-- duracion (Sec (alargar k a) (alargar k a'))
+-- -------------------------------------------
+-- =                               def duracion
+-- duracion(alargar k a) + duracion(alargar k a')
+-- ---------------------   ----------------------
+-- =                               H1, H2
+-- k * (duracion a) + k * (duracion a')
+-- -------------------------------------
+-- =                               factor comun
+-- k * (duracion a + duracion a')
 
 
-duracion :: Animacion a -> Int
-duracion (Espera d)  = d
-duracion (Mov d act) = d
-duracion (Sec a a')  = duracion a + duracion a'
-duracion (Par a a')  = max (duracion a) (duracion a')
+-- LD)
 
--- 2.b
-alargar :: Int -> Animacion a -> Animacion a
-alargar n (Espera d)  = Espera (n * d)
-alargar n (Mov d act) = Mov (n * d) act
-alargar n (Sec a a')  = Sec (alargar n a) (alargar n a')
-alargar n (Par a a')  = Par (alargar n a) (alargar n a')
+-- k * (duracion (Sec a a'))
+--     ---------------------
+-- =                               def duracion
+-- k * (duracion a + duracion a')
+
+-- CASO INDUCTIVO 2:
+
+-- LI)
+
+-- duracion (alargar k (Par a a'))
+--          ---------------------
+-- =                               def alargar
+-- duracion (Par (alargar k a) (alargar k a'))
+-- -------------------------------------------
+-- =                               def duracion
+-- max (duracion(alargar k a)) (duracion(alargar k a'))
+--     ----------------------  ------------------------
+-- =                               HI1, HI2
+-- max (k * (duracion a)) (k * (duracion a'))
+-- ------------------------------------------
+-- =                               def max
+-- if (k * (duracion a)) >= (k * (duracion a')) then (k * (duracion a)) else (k * (duracion a'))
+-- ---------------------------------------------------------------------------------------------
+-- =                               lema if-else
+-- k * (if duracion a >= duracion a' then duracion a else duracion a')
+
+-- LD)
+
+-- k * (duracion (Par a a'))
+--     ---------------------
+-- =                               def duracion
+-- k * max (duracion a) (duracion a')
+--     ------------------------------
+-- =                               def max
+-- k * (if (duracion a) >= (duracion a') then (duracion a) else (duracion a'))
+
+-- ciclar :: Animacion a -> Simulador
+-- ciclar anim = \t -> atIndex (t `mod` length frames) frames
+--     where frames = simular anim
+
+atIndex' i []     = error ("no hay elemento nro: " ++ show i)
+atIndex' 0 (x:xs) = x
+atIndex' i (x:xs) = atIndex' (i - 1) xs
+
+-- atIndex :: Int -> [Frame] -> Frame
+atIndex = flip (foldr (\x h i -> if i == 0 then x else h (i-1)) (\i -> error ("no hay elemento nro: " ++ show i)))
+
+-- atIndex i xs = foldr g (\i -> error ("no hay elemento nro: " ++ show i))
+--     where g x r 0 = x
+--           g x r i = r (i-1)
+
+-- combinar :: [Animacion a ] -> [Animacion a ] -> Animacion a
+-- combinar = secuenciar . aplicarPar . zip
+
+-- aplicarPar :: [(Animacion a, Animacion a)] -> [Animacion a]
+-- aplicarPar = map (\(anim1, anim2) -> Par anim1 anim2)
+
+-- secuenciar :: [Animacion a] -> Animacion a
+-- secuenciar = foldr (\anim r -> Sec anim r) (Espera 0)
