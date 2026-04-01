@@ -33,3 +33,13 @@ const x y = x
 
 compose :: (b -> c) -> (a -> b) -> a -> c
 compose f g x = f (g x)
+
+-- 4.
+
+-- (apply apply) apply :: (a -> b) -> a -> b
+
+-- b. (twice doble) 2 :: Int
+
+-- c. ((twice twice) twice) swap :: (a, a) -> (a, a)
+
+-- d. ((flip twice) 1) doble :: Int
