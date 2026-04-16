@@ -1,12 +1,12 @@
 -- 1
 
-curry :: ((a,b) -> c) -> a -> b -> c 
-curry f x y = f (x,y)
+-- curry :: ((a,b) -> c) -> a -> b -> c 
+-- curry f x y = f (x,y)
 -- curryRico = \f x y -> f (x, y)
 
 
-uncurry :: (a -> b -> c) -> (a,b) -> c 
-uncurry f (x, y) = f x y
+-- uncurry :: (a -> b -> c) -> (a,b) -> c 
+-- uncurry f (x, y) = f x y
 -- uncurryRico = \f (x, y) -> f x y
 
 -- 2. y 3.
@@ -135,6 +135,8 @@ doble = \x -> 2 * x
 -- --------------------------------------------------------------------------- a1 <-- Int, (b2 -> c2) <-- Int
 -- (compose compose) doble :: Error de tipo
 
+-- 7
+
 many :: Int -> (a -> a) -> a -> a 
 many 0 f x = id x
 many n f x = compose f (many (n-1) f) (id x)
@@ -148,6 +150,25 @@ manyR 0 f = id
 manyR n f = f . (manyR (n-1) f)
 
 suma x y = x + y
+
+-- a. (Int -> Int) -> Int -> Int
+
+-- b. (a -> b -> c) -> (a -> b) -> c
+
+-- c. (a -> b, c -> d) -> (a, c) -> (b, d)
+
+-- d. ((a, a) -> b) -> a -> b
+
+-- e. (a -> b -> c) -> (b -> a -> c)
+
+-- f. (a -> b) -> (a, a) -> (b, b)
+
+-- g. (a -> b, a -> c) -> a -> (b, c)
+
+-- h. (a -> b -> c) -> (a -> b) -> a -> c
+
+-- i. a -> b -> a
+
 -- 9.
 
 -- a. cuadruple x = doble (doble x) 
@@ -175,6 +196,4 @@ timesTwoPlusThreeIII = (subst (const (suma 3)) doble)
 
 -- c. fourTimes f x = f (f (f (f x)))
 
-fourTimesI f x = many 4 f x
-fourTimesII f x = twice twice f x
-
+-- (==0) . (`mod` 2) . (*2)
