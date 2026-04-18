@@ -46,7 +46,9 @@ compose f g x = f (g x)
 
 -- 5.
 
-appDup = \f x -> f (x, x) 
+appDup = \f x -> f (x, x)
+appDup'' f = \x -> f (x, x) 
+appDup''' f x = f (x, x) 
 
 appDup' = (\f -> (\x -> f (x, x)))
 
@@ -65,6 +67,10 @@ appDist' = (\f -> (\(x, y) -> (f x, f y)))
 subst = \f g x -> (f x) (g x)
 
 subst' = (\f -> (\g -> (\x -> (f x) (g x))))
+
+subst'' f = \g x -> f x (g x)
+subst''' f g = \x -> f x (g x)
+subst'''' f g x = f x (g x)
 
 doble = \x -> 2 * x
 
