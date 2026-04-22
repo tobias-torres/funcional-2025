@@ -3,21 +3,21 @@
 suma x y = x + y 
 
 -- a. udiv (x,y) = div x y -- Parcial: no se puede dividir por 0 
-udivE (x,0) = error "No puedo dividir por 0" -- Parcial: no se puede dividir por 0 y no tiene otros casos para evaluar
+-- udivE (x,0) = error "No puedo dividir por 0" -- Parcial: no se puede dividir por 0 y no tiene otros casos para evaluar
 
-udivE (x,y) = div x y -- Parcial: no se puede dividir por 0
+-- udivE (x,y) = div x y -- Parcial: no se puede dividir por 0
 
-udivH = uncurry div -- Parcial: no se puede dividir por 0
+-- udivH = uncurry div -- Parcial: no se puede dividir por 0
 
-succ x = x + 1 -- Total: siempre devuelve un resultado para cualquier valor de x
+-- succ x = x + 1 -- Total: siempre devuelve un resultado para cualquier valor de x
 
-succH = suma 1 -- Total: siempre devuelve un resultado para cualquier valor de x
+-- succH = suma 1 -- Total: siempre devuelve un resultado para cualquier valor de x
 
-porLaMitad = flip div 2 -- Total: devuelve un resultado porque siempre divide por 2
+-- porLaMitad = flip div 2 -- Total: devuelve un resultado porque siempre divide por 2
 
-conDieresis 'u' = 'ü' 
+-- conDieresis 'u' = 'ü' 
 
-conDieresisB 'u' = 'ü' 
+-- conDieresisB 'u' = 'ü' 
 -- conDieresisB c   = conDieresisB c 
 -- i. conTildePM 'a' = 'á' 
 -- conTildePM 'e' = 'é' 
@@ -30,3 +30,18 @@ conDieresisB 'u' = 'ü'
 -- k. conTilde c = if esVocal c && esMinuscula c 
 --               then conTildePM c 
 --               else c 
+
+-- 6
+
+-- a :: a
+-- no existen expresiones asi salvo bottom
+
+a' :: Int -> a
+a' n = undefined
+
+-- b
+parcial = (\x->if x+1==0 then undefined else undefined)
+
+-- c
+
+parcialDos = (\x -> undefined)
