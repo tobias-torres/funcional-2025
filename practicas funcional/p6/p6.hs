@@ -287,14 +287,160 @@ doble x = 2 * x
 
 -- succ x = x + 1
 
-apply f x = f x
-
-subst f g x = f x (g x)
-
 cuadruple = doble . doble
 
 doble' = (*2) . id
 
 twice f = f . f
 
-many n f = f 
+-- b
+
+demostrar las siguientes propiedades:
+
+i. 
+para todo f. para todo g. f . g = compose f g
+para todo f. para todo g. para todo x. (f . g) x = compose f g x
+por def de (.)
+para todo f. para todo g. para todo x. f (g x) = compose f g x
+sean f', g' dos funciones y x' un elemento. se vera que f' (g' x') = compose f' g' x'
+
+Lado Izq)
+
+f' (g' x')
+
+Lado Der)
+
+compose f' g' x'
+----------------
+=                           def compose
+f' (g' x')
+
+ii.
+
+Prop) swap . swap = id?
+Dem) por ppio de ext. es equivalente demostrar que
+    para todo (x, y). (swap . swap) (x, y) = id (x, y)?
+    por def de (.)
+    para todo (x, y). swap (swap (x, y)) = id (x, y)?
+sean (s, t) un par de elementos cualquiera. Se vera que swap (swap (s, t)) = id (s, t)
+
+Lado Izq)
+
+swap (swap (s, t))
+     ------------
+=                           def de swap
+swap (t, s)
+-----------
+=                           def de swap
+(s, t)
+
+Lado Der)
+
+id (s, t)
+---------
+=                           def de id
+(s, t)
+
+
+iii. 
+para todo f. para todo g. para todo h. f . (g . h) = (f . g) . h
+
+para todo f. para todo g. para todo h. para todo x. (f . (g . h)) x = ((f . g) . h) x
+por def de (.)                                          f   g  x     f   g    x
+para todo f. para todo g. para todo h. para todo x. f ((g . h) x) = (f . g) (h x)
+por def de (.)                                          f   g  x     f   g    x
+para todo f. para todo g. para todo h. para todo x. f (g (h x)) = f (g (h x))
+SON IGUALES
+
+
+iv.
+Prop: curry . uncurry = id ?
+Dem) por ppio de ext (tres veces). Es equivalente demostrar que:
+para todo f. para todo x. para todo y. (curry . uncurry) f x y = id f x y ?  
+sea f una funcion ,s y t unos elementos cualquiera. Se vera que (curry . uncurry) f s t = id f s t
+
+Lado Izq)
+
+(curry . uncurry) f s t
+--------------------
+=                               def de (.)
+curry (uncurry f) s t
+---------------------
+=                               def de curry
+uncurry f (s,t)
+-------------
+=                               def de uncurry
+f s t
+
+Lado Der)
+
+id f s t
+-----------
+=                               def de id
+f s t
+
+v. para todo f. appAssoc f = f . assoc
+por ppio de ext. Es equivalente demostrar que:
+para todo (a,(b,c)). appAssoc f (a, (b, c)) = (f . assoc) (a, (b, c))
+por def de (.)
+para todo (a,(b,c)). appAssoc f (a, (b, c)) = f (assoc (a, (b, c)))
+sea (x, (y, z)) un par cualquiera. Se vera que appAssoc f (x, (y, z)) = f (assoc (x, (y, z)))
+
+Lado Izq)
+
+appAssoc f (x, (y, z))
+----------------------
+=                               def de appAssoc
+f (assoc (x, (y, z)))
+  
+Lado Der)
+
+f (assoc (x, (y, z)))
+
+-- c
+
+-- i. doble . doble = cuadruple
+
+Lado Izq:
+
+(doble . doble)
+---------------
+=                       por propiedad f . g = compose f g
+compose doble doble
+-------------------
+=                       por propiedad compose doble doble = cuadruple
+cuadruple
+
+llegue al lado derecho
+
+
+-- ii. para todo f'. curry (uncurry (curry f')) = curry f'
+
+Lado Izq)
+
+curry (uncurry (curry f'))
+      --------------------
+=                           por uncurry (curry f') = f'
+curry f'
+
+Llegue al lado derecho
+
+
+iii. para todo f. appAssoc (uncurry (uncurry f)) = (uncurry . uncurry) f . assoc
+
+Lado Izq)
+
+appAssoc (uncurry (uncurry f))
+------------------------------
+=                        
+uncurry (uncurry f) . assoc
+
+Lado Der)
+
+(uncurry . uncurry) f . assoc
+-----------------------------
+=                           por def (.)
+uncurry (uncurry f) . assoc
+
+
+iv. para todo f. (uncurry . uncurry) f . assoc = uncurry (uncurry . f)
