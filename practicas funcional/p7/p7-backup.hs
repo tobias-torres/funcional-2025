@@ -49,3 +49,4 @@ planillaDeIntegrantes :: Equipo -> Planilla
 planillaDeIntegrantes (Becario n)               = Registro n Fin
 planillaDeIntegrantes (Investigador n e1 e2 e3) = Registro n (juntarPlanillas (planillaDeIntegrantes e1) (juntarPlanillas (planillaDeIntegrantes e2) (planillaDeIntegrantes e3)))
 
+
