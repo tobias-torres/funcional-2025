@@ -1,6 +1,6 @@
 -- f []     =
 -- f (x:xs) = ... f xs
-import Prelude hiding ((++))
+import Prelude hiding ((++), reverse, length, sum, product, concat, elem, all, any, count, subset, zip, unzip)
 
 lista = [[23,33],[1],[45,66]]
 listaDos = [1,2,3,4,5,66]
@@ -26,9 +26,9 @@ concat' []       = []
 concat' (xs:xss) = xs ++ concat' xss
 
 -- -- e.  que indica si el elemento dado pertenece a la lista.
-elem' :: Eq a => a -> [a] -> Bool
-elem' e []     = False
-elem' e (x:xs) = e == x || elem' e xs
+elem :: Eq a => a -> [a] -> Bool
+elem e []     = False
+elem e (x:xs) = e == x || elem e xs
 
 -- -- f. , que indica si todos los elementos de la lista cumplen el predicado dado.
 all' :: (a -> Bool) -> [a] -> Bool
@@ -64,21 +64,23 @@ subset' (x:xs) ys = elem x ys && subset' xs ys
 (++) []     ys = ys
 (++) (x:xs) ys = x : (xs ++ ys)
 
--- -- k. 
--- reverse :: [a] -> [a], que describe la lista que tiene los elementos en
--- el orden inverso a la lista dada.
--- f []     =
--- f (x:xs) = ... f xs
+-- k. 
+-- que describe la lista que tiene los elementos en el orden inverso a la lista dada.
+reverse :: [a] -> [a]
+reverse []     = []
+reverse (x:xs) = reverse xs ++ [x]
 
--- -- l. 
--- zip :: [a] -> [b] -> [(a,b)]
--- f []     =
--- f (x:xs) = ... f xs
+-- -- l. que describe la lista resultante de juntar de a pares los elementos  de  ambas  listas, según  la posición que comparten en cada una
+zip :: [a] -> [b] -> [(a,b)]
+zip [] ys         = []
+zip (x:xs) (y:ys) = (x, y) : zip xs ys
 
 -- -- m. 
--- unzip :: [(a,b)] -> ([a],[b]), que describe el par de listas que
+-- , que describe el par de listas que
 -- resulta de desarmar la lista dada; la primera componente del resultado se
 -- corresponde con las primeras componentes de los pares dados, y la segunda
 -- componente con las segundas componentes de dichos pares.
--- f []     =
--- f (x:xs) = ... f xs
+unzip :: [(a,b)] -> ([a],[b])
+unzip []     = ([],[])
+unzip (x:xs) = (fst x : fst (unzip xs), snd x : snd (unzip xs))
+
