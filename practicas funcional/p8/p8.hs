@@ -84,3 +84,38 @@ unzip :: [(a,b)] -> ([a],[b])
 unzip []     = ([],[])
 unzip (x:xs) = (fst x : fst (unzip xs), snd x : snd (unzip xs))
 
+--------------------------------------------------------------------------------------------------
+
+data N = Z | S N deriving (Show)
+
+-- pattern matching sobre una sola estructura
+
+uno = S Z
+dos = S (S Z)
+tres = S (S (S Z))
+cuatro = S (S (S (S Z)))
+cinco = S (S (S (S (S Z))))
+seis =  S (S (S (S (S (S Z)))))
+
+-- que describe el número representado por el elemento dado. 
+evalN :: N -> Int
+evalN Z     = 0
+evalN (S n) = 1 + evalN n
+
+-- , que describe la representación unaria de la suma  de  los  números  representados  por  los  argumentos.  La 
+-- resolución  debe  ser  exclusivamente  simbólica, o sea, SIN calcular cuáles son esos números. 
+addN :: N -> N -> N
+addN Z m     = m
+addN (S n) m = S (addN n m)
+
+-- , que describe la representación unaria del producto  de  los  números  representados  por  los  argumentos.  La 
+-- resolución debe ser exclusivamente simbólica. 
+prodN :: N -> N -> N
+prodN Z m     = Z
+prodN (S n) m = addN (prodN n m) m 
+
+-- , que describe la representación unaria del número dado usando el tipo N.
+int2N  :: Int -> N
+int2N 0 = Z
+int2N n = S (int2N (n - 1))
+

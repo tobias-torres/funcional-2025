@@ -520,3 +520,121 @@ length (reverse xs') + 1 + 0
 1 + length (reverse xs')
 
 
+
+------------------------------------------------------------------------------------
+
+-- i.
+para todo n1. para todo n2. evalN (addN n1 n2) = evalN n1 + evalN n2 ?
+sea m1 y m2 dos elementos de tipo N, por ppio de induccion en la estructura de m1, es equivalente demostrar que:
+
+Caso Base: m1 = Z
+
+evalN (addN Z m2) = evalN Z + evalN m2
+
+Caso Inductivo: m1 = S n)
+
+HI) evalN (addN n m2) = evalN n + evalN m2 !
+TI) evalN (addN (S n) m2) = evalN (S n) + evalN m2 ?
+
+Caso Base:
+
+I)
+
+evalN (addN Z m2)
+        --------
+=               def de addN
+evalN m2
+
+D)
+
+evalN Z + evalN m2
+-------
+=               def de evalN
+0 + evalN m2
+------------
+=               nuetro de la suma
+evalN m2
+
+Caso Inductivo:
+
+I)
+
+evalN (addN (S n) m2)
+        ------------
+=               def de addN
+evalN (S (addN n m2))
+---------------------
+=               def de evalN
+1 + evalN (addN n m2)
+    -----------------
+=               def evalN
+1 + evalN n + evalN m2
+
+D)
+
+evalN (S n) + evalN m2
+-----------
+=               def de evalN
+1 + evalN n + evalN m2
+
+-- ii.  
+
+para todo n1. para todo n2. evalN (prodN n1 n2) = evalN n1 * evalN n2 
+sea m1 y m2 dos elementos de tipo N. Por ppio de induccion sobre m1, es equivalente demostrar que:
+
+Caso Base: m1 = Z
+
+evalN (prodN Z m2) = evalN Z * evalN m2 ?
+
+Caso Inductivo: m1 = S n)
+
+HI) evalN (prodN n m2) = evalN n * evalN m2 !
+TI) evalN (prodN (S n) m2) = evalN (S n) * evalN m2 ?
+
+Caso Base:
+
+I)
+
+evalN (prodN Z m2)
+        ---------
+=               def prodN
+evalN Z
+-------
+=               def evalN
+0
+
+D)
+
+evalN Z * evalN m2
+-------
+=               def de evalN
+0 * evalN m2
+------------
+=               def de mult
+0
+
+Caso Inductivo:
+
+I)
+
+evalN (prodN (S n) m2)
+        -------------
+=               def prodN
+evalN (addN (prodN n m2) m2)
+
+
+D)
+
+evalN (S n) * evalN m2
+-----------
+=               def de evalN
+1 + evalN n * evalN m2
+    ------------------
+=               HI
+1 + evalN (prodN n m2)
+
+
+HI) evalN (prodN n m2) = evalN n * evalN m2 !
+
+-- iii.  int2N . evalN = id 
+-- iv.  evalN . int2N = id 
