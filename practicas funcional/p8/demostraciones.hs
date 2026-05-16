@@ -519,4 +519,262 @@ length (reverse xs') + 1 + 0
 =               aritm
 1 + length (reverse xs')
 
+-- i
+para todo xs. para todo ys. reverse (xs ++ ys) = reverse ys ++ reverse xs?
+sea ns y ss dos listas, por ppio de induccion sobre la estructura de ns, es equivalente demostrar que:
+
+Caso Base: ns = [])
+
+reverse ([] ++ ss) = reverse ss ++ reverse [] ?
+
+Caso Inductivo: ns = x:xs')
+
+HI) reverse (xs' ++ ss) = reverse ss ++ reverse xs' !
+TI) reverse ((x:xs') ++ ss) = reverse ss ++ reverse (x:xs') ?
+
+Caso Base:
+
+I)
+
+reverse ([] ++ ss)
+        ---------
+=               def ++
+reverse ss
+
+D)
+
+reverse ss ++ reverse []
+              ----------
+=               def reverse
+reverse ss ++ []
+----------------
+=               def de ++
+reverse ss
+
+
+Caso Inductivo:
+
+I)
+
+reverse ((x:xs') ++ ss)
+        --------------
+=               def de ++
+reverse (x : (xs' ++ ss))
+-------------------------
+=               def de reverse
+reverse (xs' ++ ss) ++ [x]
+-------------------
+=               HI
+reverse ss ++ reverse xs' ++ [x]
+
+
+D)
+
+reverse ss ++ reverse (x:xs')
+              ---------------
+=               def reverse
+reverse ss ++ reverse xs' ++ [x]
+
+
+-- j
+
+Prop)
+para todo xs. para todo ys. all p (xs ++ ys) = all p (reverse xs) && all p (reverse ys) ?
+sea ns y ss, dos listas. Por ppio de induccion sobre la estructura de ns, es equivalente demostrar que:
+
+CASO BASE: ns = []
+
+all p ([] ++ ss) = all p (reverse []) && all p (reverse ss) ?
+
+CASO Inductivo: ns = (x:xs')
+
+HI) all p (xs' ++ ss) = all p (reverse xs') && all p (reverse ss) !
+TI) all p ((x:xs') ++ ss) = all p (reverse (x:xs')) && all p (reverse ss) ?
+
+
+CASO BASE:
+
+I)
+
+all p ([] ++ ss)
+        -------
+=               def de ++
+all p ss
+--------
+=               lema equisDe
+all p (reverse ss)
+
+
+D)
+
+all p (reverse []) && all p (reverse ss)
+        ---------
+=               def de reverse
+all p [] && all p (reverse ss)
+--------
+=               def de all
+True && all p (reverse ss)
+--------------------------
+=               True es el neutro en &&
+all p (reverse ss)
+
+
+def de lema equisDe
+all p = all p . reverse
+por ppio de extensionalidad
+para todo xs. all p xs = (all p . reverse) xs
+por def de (.)
+para tdo xs. all p xs = all p (reverse xs) ?
+sea ns una lista cualquiera, por ppio de induccion sobre la estructura de ns, es equivalente demostrar que:
+
+Caso Base: ns = []
+
+all p [] = all p (reverse []) ?
+
+Caso Inductivo: ns = (x:xs')
+
+HI) all p xs' = all p (reverse xs') !
+TI) all p (x:xs') = all p (reverse (x:xs')) ?
+
+
+Caso Base:
+
+I)
+
+all p []
+
+D)
+
+all p (reverse [])
+        ---------
+=               def de reverse
+all p []
+
+
+Caso Inductivo:
+
+I)
+
+all p (x:xs')
+-------------
+=               def all
+p x && all p xs'
+       --------
+=               HI
+p x && all p (reverse xs')
+
+
+D)
+
+all p (reverse (x:xs'))
+        --------------
+=               def de reverse
+all p (reverse xs' ++ [x])
+--------------------------
+=               lema 2: distributivo
+all p (reverse xs') && all p [x]
+                        --------
+=               def de all
+all p (reverse xs') && p x && all p []
+                                  --------
+=               def de all
+all p (reverse xs') && p x && True
+                        ---------------
+=               True es el neutro de &&
+all p (reverse xs') && p x
+--------------------------
+=               conmutatividad &&
+p x && all p (reverse xs')
+
+
+definicion de lema:
+por ppio de extensionalidad (dos veces)
+para todo xs. para todo ys. all p (xs ++ ys) = all p xs && all p ys ?
+sea ns y ss, dos listas cualquiera. por ppio de induccion sobre la estructura de ns, es equivalente demostrar que:
+
+Caso Base: ns = []
+
+all p ([] ++ ss) = all p [] && all p ss ?
+
+Caso Inductivo: ns = (x:xs')
+
+HI) all p (xs' ++ ss) = all p xs' && all p ss !
+TI) all p ((x:xs') ++ ss) = all p (x:xs') && all p ss ?
+
+
+Caso Base:
+
+I)
+
+all p ([] ++ ss)
+        -------
+=               def de ++
+all p ss
+
+D)
+
+all p [] && all p ss
+--------
+=               def de all
+True && all p ss
+----------------
+=               True es neutro de &&
+all p ss
+
+Caso Inductivo:
+
+I)
+
+all p ((x:xs') ++ ss)
+        ------------
+=               def de ++
+all p (x : (xs' ++ ss))
+-----------------------
+=               def de all
+p x && all p (xs' ++ ss)
+
+D)
+
+all p (x:xs') && all p ss
+-------------
+=               def de all
+p x && all p xs' && all p ss
+        --------------------
+=               HI
+p x && all p (xs' ++ ss)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
