@@ -743,42 +743,6 @@ p x && all p xs' && all p ss
 =               HI
 p x && all p (xs' ++ ss)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ------------------------------------------------------------------------------------
 
 -- i.
@@ -879,6 +843,9 @@ evalN (prodN (S n) m2)
         -------------
 =               def prodN
 evalN (addN (prodN n m2) m2)
+---------------------------
+=               prop demostrada ejercicio anterior
+evalN (prodN n m2) + evalN m2
 
 
 D)
@@ -886,13 +853,935 @@ D)
 evalN (S n) * evalN m2
 -----------
 =               def de evalN
-1 + evalN n * evalN m2
-    ------------------
+(1 + evalN n) * evalN m2
+------------------------
+=               distributiva
+evalN m2 + evalN n * evalN m2
+          -------------------
 =               HI
-1 + evalN (prodN n m2)
+evalN m2 + evalN (prodN n m2)
 
 
-HI) evalN (prodN n m2) = evalN n * evalN m2 !
+-- iii.
 
--- iii.  int2N . evalN = id 
--- iv.  evalN . int2N = id 
+int2N . evalN = id
+Dem) por ppio de extensionalidad.
+para todo m. (int2N . evalN) m = id m?
+por def de (.)
+para todo m. int2N (evalN m) = id m?
+sea n un elemento de tipo N. Por ppio de induccion sobre la estructura de n, es equivalente demostrar que:
+
+Caso Base: m = Z
+
+int2N (evalN Z) = id Z ?
+
+Caso Inductivo: m = (S m')
+
+HI) int2N (evalN m') = id m' !
+TI) int2N (evalN (S m')) = id (S m') !
+
+
+Caso Base:
+
+I)
+
+int2N (evalN Z)
+       --------
+=               def evalN
+int2N 0
+-------
+=               def int2N
+Z
+
+D)
+
+id Z
+----
+=               def id
+Z
+
+Caso Inductivo:
+
+I)
+
+int2N (evalN (S m'))
+        -----------
+=               def evalN
+int2N (1 + evalN m')
+-------------------
+=               def int2N
+S (int2N (1 + evalN m') - 1 )
+          ------------------
+=               cancelo los 1
+S (int2N(evalN m'))
+-------------------
+=               HI
+id (S m')
+
+D)
+
+id (S m')
+
+-- iv.
+-- Dem) evalN . int2N = id ?
+-- Prop) por ppio de extensionalidad.
+-- para todo n. (evalN . int2N) n = id n ?
+-- por def de (.)
+-- para todo n. evalN (int2N n) = id n ?
+-- sea n' un numero, por ppio de induccion en la estructura de n, es equivalente demostrar que:
+
+-- Caso Base: n' = 0
+
+-- evalN (int2N 0) = id 0 ?
+
+-- Caso Inductivo: n' = m)
+
+-- HI) evalN (int2N m) = id m !
+-- TI) evalN (int2N n) = id n
+
+Preguntarle a santi
+
+-- Ejercicio 2) b
+
+i.  evalNU . succNU = (+1) . evalNU 
+por ppio de extensionalidad.
+para todo nu. (evalNU . succNU) nu = ((+1) . evalNU) nu ?
+por def de (.)
+evalNU (succNU nu) = (+1) (evalNU nu) ?
+sea nu' un tipo NU, por ppio de induccion sobre la estructura de nu', es equivalente demostrar que:
+
+CASO BASE: nu' = []
+
+evalNU (succNU []) = (+1) (evalNU []) ?
+
+Caso Inductivo: nu' = n:ns)
+
+HI) evalNU (succNU ns) = (+1) (evalNU ns) ?
+TI) evalNU (succNU (n:ns)) = (+1) (evalNU (n:ns)) ?
+
+Caso Base
+
+I)
+
+evalNU (succNU [])
+        ---------
+=               def de succNU
+evalNU (() : [])
+----------------
+=               def de evalNU
+1 + evalNU []
+    ---------
+=               def evalNU
+1 + 0
+
+D)
+
+(+1) (evalNU [])
+     -----------
+=               def evalNU
+(+1) 0
+
+Caso Inductivo
+
+I)
+
+evalNU (succNU (n:ns))
+        -------------
+=               def de succNU
+evalNU ((): (n:ns))
+-------------------
+=               def de evalNU
+1 + evalNU (n:ns)
+    --------------
+=               HI
+1 + 1 + evalNU ns
+
+
+D)
+
+(+1) (evalNU (n:ns))
+      -------------
+=               def evalNU
+(+1) (1 + evalNU ns)
+
+
+ii. para todo n1. para todo n2. evalNU (addNU n1 n2) = evalNU n1 + evalNU n2 
+sean nu1 y nu2, dos elementos de tipo NU. Por ppio de induccion en nu1, es equivalente demostrar que:
+
+Caso Base: nu1 = []
+
+evalNU (addNU [] nu2) = evalNU [] + evalNU nu2 ?
+
+Caso Inductivo: nu1 = n:ns)
+
+HI) evalNU (addNU ns n2) = evalNU ns + evalNU n2 !
+TI) evalNU (addNU (n:ns) n2) = evalNU (n:ns) + evalNU n2 ?
+
+Caso Base:
+
+I)
+
+evalNU (addNU [] nu2)
+        ------------
+=               def addNU
+evalNU nu2
+
+D)
+
+evalNU [] + evalNU nu2
+---------
+=               def de evalNU
+0 + evalNU nu2
+--------------
+=               0 es neutro
+evalNU nu2
+
+Caso Inductivo
+
+I)
+
+evalNU (addNU (n:ns) n2)
+        ---------------
+=               def de addNU
+evalNU (n : addNU ns n2)
+------------------------
+=               def evalNU
+1 + evalNU (addNU ns n2)
+    --------------------
+=               HI
+1 + evalNU ns + evalNU n2
+
+
+D)
+
+evalNU (n:ns) + evalNU n2
+-------------
+=               def de evalNU
+1 + evalNU ns + evalNU n2
+
+
+iv.  n2nu . nu2n = id 
+por ppio de extensionalidad.
+para todo n. (n2nu . nu2n) n = id n ?
+por def de (.)
+para todo n. n2nu (nu2n n) = id n ?
+sea nu de tipo NU. por ppio de induccion en la estructura de nu, es equivalente:
+
+Caso Base: nu = []
+
+n2nu (nu2n []) = id [] ?
+
+Caso Inductivo: nu = (n:nu')
+
+HI) n2nu (nu2n nu') = id nu' !
+TI) n2nu (nu2n (n:nu')) = id (n:nu') ?
+
+
+Caso Base
+
+I)
+
+n2nu (nu2n [])
+     ---------
+=               def de nu2n
+n2nu Z
+------
+=               def de n2nu
+[]
+
+
+D)
+
+id []
+=               def de id
+[]
+
+Caso Inductivo
+
+I)
+
+n2nu (nu2n (n:nu'))
+      ------------
+=               def de nu2n
+n2nu (S (nu2n nu'))
+-------------------
+=               def n2nu
+() : (n2nu (nu2n nu'))
+     ----------------
+=               HI
+() : id nu'
+     -----
+=               def de id
+() : nu'
+
+D)
+
+id (n:nu')
+----------
+=               HI
+(n:nu')
+
+
+-- ejercicio 3)b
+
+i.  evalNB . normalizarNB = evalNB 
+Prop) por ppio de extensionalidad
+para todo nbin. (evalNB . normalizarNB) nbin = evalNB nbin ?
+por def de (.)
+para todo nbin. evalNB (normalizarNB nbin) = evalNB nbin ?
+sea nbin1 de tipo NBin, por ppio de induccion sobre la estructura de nbin1, es equivalente demostrar:
+
+CASO BASE: nbin = []
+
+evalNB (normalizarNB []) = evalNB [] ?
+
+CASO INDUCTIVO: nbin = (n:ns)
+
+SUBCASO n = O 
+
+HI) evalNB (normalizarNB ns) = evalNB ns !
+TI) evalNB (normalizarNB (O:ns)) = evalNB (O:ns) ?
+
+SUBCASO n = I
+
+HI) evalNB (normalizarNB ns) = evalNB ns !
+TI) evalNB (normalizarNB (I:ns)) = evalNB (I:ns) ?
+
+Caso Base:
+
+I)
+
+evalNB (normalizarNB [])
+        ---------------
+=                       def de normalizarNB
+evalNB []
+
+Caso Inductivo: SUBCASO n = O
+
+I)
+
+evalNB (normalizarNB (O:ns))
+        ---------------------
+=                       def de normalizarNB
+evalNB (normalizar O (normalizarNB ns))
+---------------------------------------
+=                       Lema PorDosParaLlegar                     
+2 * evalNB (normalizarNB ns)
+
+D)
+
+evalNB (O:ns)
+---------------
+=                       def evalNB
+dbAsInt O + 2 * ( evalNB ns )
+                -------------
+=                       HI
+dbAsInt O + 2 * evalNB (normalizarNB ns)
+---------
+=                       def dbAsInt
+0 + 2 * evalNB (normalizarNB ns)
+--------------------------------
+=                       cero neutro suma
+2 * evalNB (normalizarNB ns)
+
+Caso Inductivo: SUBCASO n = I
+
+I)
+
+evalNB (normalizarNB (I:ns))
+        -------------------
+=                       def normalizarNB
+evalNB (normalizar I (normalizarNB ns))
+        ------------------------------
+=                       def de normalizar
+evalNB (I : (normalizarNB ns))
+------------------------------
+=                       def de evalNB
+dbAsInt I + 2 * (evalNB (normalizarNB ns))
+                -------------------------
+=                       HI
+dbAsInt I + 2 * evalNB ns
+
+
+D)
+
+evalNB (I:ns)
+-------------
+=                       def evalNB
+dbAsInt I + 2 * (evalNB ns)
+
+
+
+Def de Lema PorDosParaLlegar
+Prop) por ppio de extensionalidad
+para todo nb. evalNB (normalizar O nb) = 2 * (evalNB nb) ?
+sea xs una lista. Por ppio de induccion sobre la estructura de xs, se vera que:
+
+Caso Base: xs = []
+
+evalNB (normalizar O []) = 2 * (evalNB []) ?
+
+Caso Inductivo: xs = (n:nb')
+
+HI) evalNB (normalizar O nb') = 2 * (evalNB nb') !
+TI) evalNB (normalizar O (n:nb')) = 2 * (evalNB (n:nb')) ?
+
+Caso Base:
+
+I)
+
+evalNB (normalizar O [])
+        ---------------
+=                       def de normalizar
+evalNB []
+---------
+=                       def de evalNB
+0
+
+D)
+
+2 * (evalNB [])
+     ---------
+=                       def de evalNB
+2 * 0
+-----
+=                       def de *
+0
+
+Caso Inductivo:
+
+I)
+
+evalNB (normalizar O (n:nb'))
+        --------------------
+=                       def de normalizar
+evalNB (O : (n:nb'))
+--------------------
+=                       def de evalNB
+dbAsInt O + 2 * (evalNB (n:nb'))
+---------
+=                       def de dbAsInt
+0 + 2 * (evalNB (n:nb'))
+------------------------
+=                       neutro de suma
+2 * (evalNB (n:nb'))
+
+D)
+
+2 * (evalNB (n:nb'))
+
+
+-- ii.  evalNB . succNB = (+1) . evalNB 
+Prop) por ppio de extensionalidad
+para todo nbin. (evalNB . succNB) nbin = ((+1) . evalNB) nbin ?
+por def de (.) 2 veces
+para todo nbin. evaln (succNB nbin) = (+1) (evalNB nbin) ?
+sea nbin1 de tipo NBin, por ppio de induccion sobre la estructura de nbin1, es equivalente demostrar:
+
+CASO BASE: nbin = []
+
+evalNB (succNB []) = (+1) (evalNB []) ?
+
+CASO INDUCTIVO: nbin = n: ns)
+
+Subcaso nbin = O
+
+HI) evalNB (succNB ns) = (+1) (evalNB ns) !
+TI) evalNB (succNB (O: ns)) = (+1) (evalNB (O: ns)) ?
+
+Subcaso nbin = I
+
+HI) evalNB (succNB ns) = (+1) (evalNB ns) !
+TI) evalNB (succNB (I: ns)) = (+1) (evalNB (I: ns)) ?
+
+Caso Base
+
+I)
+
+evalNB (succNB [])
+        ---------
+=               def de succNB
+evalNB [I]
+---------
+=               def de evalNB
+dbAsInt I + 2 * (evalNB [])
+---------
+=               def de dbAsInt
+1 + 2 * (evalNB [])
+        -----------
+=               def de evalNB
+1 + 2 * 0
+   -------
+=               def de *
+1
+
+D)
+
+(+1) (evalNB [])
+     -----------
+=               def de evalNB
+(+1) 0
+------
+=               def de +
+1
+
+Caso Inductivo
+
+I)
+
+evalNB (succNB (O: ns))
+        ---------------------
+=               def de succNB
+evalNB ( I : ns)
+----------------
+=               def de evalNB
+dbAsInt I + 2 * (evalNB ns)
+---------
+=               def de dbAsInt
+1 + 2 * (evalNB ns)
+
+
+D)
+
+(+1) (evalNB (O: ns))
+      --------------
+=               def de evalNB
+(+1) (dbAsInt O + 2 * (evalNB ns))
+     ---------
+=               def de dbAsInt
+(+1) (0 + 2 * (evalNB ns))
+      -------------------
+=               def de +
+1 + 2 * (evalNB ns)
+
+Caso Inductivo: n = I
+
+I)
+
+evalNB (succNB (I: ns))
+        --------------
+=               def de succNB
+evalNB (O : (succNB ns))
+----------------------
+=               def de evalNB
+dbAsInt O + 2 * ( evalNB (succNB ns) )
+---------
+=               def de dbAsInt
+0 + 2 * ( evalNB (succNB ns))
+----------------------------
+=               def de +
+2 * ( evalNB (succNB ns))
+     -------------------
+=               HI
+2 * (+1) (evalNB ns)
+
+D)
+
+(+1) (evalNB (I: ns))
+      --------------
+=               def de evalNB
+(+1) (dbAsInt I + 2 * (evalNB ns))
+      ---------
+=               def de dbAsInt
+(+1) 1 + 2 * (evalNB ns)
+---------
+=               def de +
+2 + 2 * (evalNB ns)
+-------------------
+=               factor comun
+2 * (+1) (evalNB ns)
+
+-- iii.
+para todo n1. para todo n2. evalNB (addNB n1 n2) = evalNB n1 + evalNB n2 ?
+sea nb1 y nb2 de tipo NBin, por ppio de induccion en la estructura de nb1, se vera que:
+
+CASO BASE: nb1 = []
+
+evalNB (addNB [] n2) = evalNB [] + evalNB n2 ?
+
+Subcaso nbin = O:n1
+
+HI) evalNB (addNB n1 n2) = evalNB n1 + evalNB n2 !
+TI) evalNB (addNB (O:n1) n2) = evalNB (O:n1) + evalNB n2 ?
+
+Subcaso nbin = I:n1
+
+HI) evalNB (addNB n1 n2) = evalNB n1 + evalNB n2 !
+TI) evalNB (addNB (I:n1) n2) = evalNB (I:n1) + evalNB n2 ?
+
+Caso Base:
+
+I)
+
+evalNB (addNB [] n2)
+        -----------
+=               def de addNB
+evalNB n2
+
+D)
+
+evalNB [] + evalNB n2
+---------
+=               def de evalNB
+0 + evalNB n2
+-------------
+=               def de +
+evalNB n2
+
+Caso Inductivo:
+
+I)
+
+evalNB (addNB (O:n1) n2)
+        ---------------
+=               def de addNB
+evalNB (f I  )
+
+D)
+
+evalNB (O:n1) + evalNB n2
+
+
+
+iv. prop) nb2n . n2nb = id 
+dem) por ppio de extensionalidad
+para todo n. (nb2n . n2nb) n = id n ?
+por def de (.)
+para todo n. nb2n (n2nb n) = id n ?
+sea m un elemento de tipo N, por ppio de induccion sobre la estructura de m, se vera
+
+Caso Base: m = Z
+
+nb2n (n2nb Z) = id Z ?
+
+Caso Inductivo: m = (S n')
+
+HI) nb2n (n2nb n') = id n' ! 
+TI) nb2n (n2nb (S n')) = id (S n') ? 
+
+
+Caso Base:
+
+I)
+
+nb2n (n2nb Z)
+     --------
+=               def de n2nb
+nb2n []
+-------
+=               def de nb2n
+Z
+
+D)
+
+id Z
+----
+=               def de id
+Z
+
+Caso Inductivo:
+
+I)
+
+nb2n (n2nb (S n'))
+      -----------
+=               def de n2nb
+nb2n (succNB (n2nb n'))
+     ------------------
+=               
+
+
+D)
+
+id (S n')
+---------
+=               HI
+nb2n (n2nb n')
+
+-- v.  normalizarNB . normalizarNB = normalizarNB 
+
+-- c.  solamente  una  de  las  siguientes  propiedades  es  verdadera.  Dar  un 
+-- contraejemplo para la que no lo sea, y demostrar la que sí lo sea. 
+
+-- i.  n2nb . nb2n = id 
+-- ii.  n2nb . nb2n = normalizarNB 
+
+
+-- Demostraciones ejercicio 1 seccion III
+
+i.  evalExpA . simplificarExpA = evalExpA 
+Dem) por ppio de extensionalidad 
+para todo ea. (evalExpA . simplificarExpA) ea = evalExpA ea ?
+por def de (.)
+para todo ea. evalExpA (simplificarExpA ea) = evalExpA ea?
+sea expa de tipo ExpA, por ppio de induccion sobre la estructura de expa, se vera que:
+
+Caso Base: expa = Cte n)
+
+evalExpA (simplificarExpA (Cte n)) = evalExpA (Cte n) ?
+
+Caso Inductivo 1: expa = Suma expa1 expa2)
+
+HI1) evalExpA (simplificarExpA expa1) = evalExpA expa1 !
+HI2) evalExpA (simplificarExpA expa2) = evalExpA expa2 !
+TI) evalExpA (simplificarExpA (Suma expa1 expa2)) = evalExpA (Suma expa1 expa2) ?
+
+Caso Inductivo 2: expa = Prod expa1 expa2)
+
+HI1) evalExpA (simplificarExpA expa1) = evalExpA expa1 !
+HI2) evalExpA (simplificarExpA expa2) = evalExpA expa2 !
+TI) evalExpA (simplificarExpA (Prod expa1 expa2)) = evalExpA (Prod expa1 expa2) ?
+
+Caso Base:
+
+I)
+
+evalExpA (simplificarExpA (Cte n))
+         -------------------------
+=               def de simplificarExpA
+evalExpA (Cte n)
+
+D)
+
+evalExpA (Cte n)
+
+
+Caso Inductivo 1:
+
+I)
+
+evalExpA (simplificarExpA (Suma expa1 expa2))
+          ----------------------------------
+=               def de simplificarExpA
+evalExpA (simplificarSuma (simplificarExpA expa1) (simplificarExpA expa2))
+--------------------------------------------------------------------------
+=               Lema evalExpA-distribuido
+
+D)
+
+evalExpA (Suma expa1 expa2)
+---------------------------
+=               def de evalExpA
+evalExpA e1 + evalExpA e2
+-----------
+=               HI1
+evalExpA (simplificarExpA expa1) + evalExpA e2
+                                   -----------
+=               HI2
+evalExpA (simplificarExpA expa1) + evalExpA (simplificarExpA expa2)
+
+
+Caso Inductivo 2:
+
+I)
+
+evalExpA (simplificarExpA (Prod expa1 expa2))
+          ----------------------------------
+=               def de simplificarExpA
+evalExpA (simplificarProd (simplificarExpA expa1) (simplificarExpA expa2))
+--------------------------------------------------------------------------
+=               Lema evalExpA-distribuido-Suma
+evalExpA (simplificarExpA expa1) * evalExpA (simplificarExpA expa2)
+
+
+D)
+
+evalExpA (Prod expa1 expa2)
+---------------------------
+=               def de evalExpA
+evalExpA e1 * evalExpA e2
+-----------
+=               HI1
+evalExpA (simplificarExpA expa1) * evalExpA e2
+                                   -----------
+=               HI2
+evalExpA (simplificarExpA expa1) * evalExpA (simplificarExpA expa2)
+
+
+
+Definicion de Lema, evalExpA-distribuido
+por ppio de extensionalidad (dos veces)
+para todo e1. para todo e2. evalExpA (simplificarSuma e1 e2) = evalExpA e1 + evalExpa e2 ?
+
+voy a demostrar por casos:
+
+Caso e1 = Cte 0)
+
+evalExpA (simplificarSuma (Cte 0) e2) = evalExpA (Cte 0) + evalExpa e2 ?
+
+I)
+
+evalExpA (simplificarSuma (Cte 0) e2)
+          ---------------------------
+=               def de simplificarSuma
+evalExpA e2
+
+D)
+
+evalExpA (Cte 0) + evalExpa e2
+----------------
+=               def de evalExpA
+0 + evalExpA e2
+---------------
+=               cero es el neutro
+evalExpa e2
+
+
+Caso e2 = Cte 0)
+
+evalExpA (simplificarSuma e1 (Cte 0)) = evalExpA e1 + evalExpA (Cte 0) ?
+
+I)
+
+evalExpA (simplificarSuma e1 (Cte 0))
+         ----------------------------
+=               def de simplificarSuma
+evalExpA e1
+
+D)
+
+evalExpA e1 + evalExpA (Cte 0)
+              ----------------
+=               def de evalExpA
+evalExpA e1 + 0
+---------------
+=               cero es el neutro
+evalExpa e1
+
+
+Caso e1 y e2 != Cte 0)
+
+evalExpA (simplificarSuma e1 e2) = evalExpA e1 + evalExpA e2 ?
+
+I)
+
+evalExpA (simplificarSuma e1 e2)
+          ---------------------
+=               def de simplificarSuma
+evalExpA (Suma e1 e2)
+---------------------
+=               def de evalExpA
+evalExpA e1 + evalExpA e2
+
+
+D)
+
+evalExpA e1 + evalExpA e2
+
+Lema evalExpA-distribuido-Suma
+
+Prop ) por ppio de extensionalidad
+para todo expa1. para todo expa2. 
+evalExpA (simplificarProd (simplificarExpA expa1) (simplificarExpA expa2)) = evalExpA (simplificarExpA expa1) * evalExpA (simplificarExpA expa2) ?
+-- CASO1 e1 = (Cte 0)
+
+-- evalExpA (simplificarProd (Cte 0) e2) = evalExpA (Cte 0) * evalExpA e2 ?
+
+-- LI)
+
+-- evalExpA (simplificarProd (Cte 0) e2)
+--          ---------------------------
+-- =                                       def evalExpA
+-- evalExpA (Cte 0)
+-- ----------------
+-- =                                       def evalExpA
+-- 0 
+
+-- LD)
+
+-- evalExpA (Cte 0) * evalExpA e2
+-- ----------------
+-- =                                       def evalExpA
+-- 0 * evalExpA e2
+-- ---------------
+-- =                                       cero es absorbente
+-- 0
+
+-- CASO2: e2 = (Cte 0)
+
+-- evalExpA (simplificarProd e1 (Cte 0)) = evalExpA e1 * evalExpA (Cte 0) ?
+
+-- LI)
+
+-- evalExpA (simplificarProd e1 (Cte 0))
+--          ---------------------------
+-- =                                       def simplificarProd
+-- evalExpA (Cte 0)
+
+-- LD)
+
+-- evalExpA e1 * evalExpA (Cte 0)
+--               ----------------
+-- =                                       def evalExpA
+-- evalExpA e1 * 0
+-- ---------------
+-- =                                       cero es absorbente
+-- 0
+
+
+
+
+-- CASO3: e1 = (Cte 1)
+
+-- evalExpA (simplificarProd (Cte 1) e2) = evalExpA (Cte 1) * evalExpA e2 ?
+
+-- LI)
+
+-- evalExpA (simplificarProd (Cte 1) e2)
+--          ----------------------
+-- =                                       def simplificarProd
+-- evalExpA e2
+
+
+-- LD)
+
+-- evalExpA (Cte 1) * evalExpA e2
+-- ----------------
+-- =                                       def evalExpA
+-- 1 * evalExpA e2
+-- ---------------
+-- =                                       1 es neutro en la multiplicacion
+-- evalExpA e2
+
+-- CASO4: e2 = (Cte 1)
+
+-- evalExpA (simplificarProd e1 (Cte 1)) = evalExpA e1 * evalExpA (Cte 1) ?
+
+-- LI)
+
+-- evalExpA (simplificarProd e1 (Cte 1))
+--          ---------------------------
+-- =                                       def simplificarProd
+-- evalExpA e1                             
+
+
+-- LD)
+
+-- evalExpA e1 * evalExpA (Cte 1)
+--               ----------------
+-- =                                       def evalExpA
+-- evalExpA e1 * 1
+-- ---------------
+-- =                                       1 es neutro en la multiplicacion
+-- evalExpA e1
+
+-- CASO5: e1 && e2 != (Cte 1) && (Cte 0)
+
+-- evalExpA (simplificarProd e1 e2) = evalExpA e1 * evalExpA e2 ?
+
+-- LI)
+
+-- evalExpA (simplificarProd e1 e2)
+--          ---------------------------
+-- =                                       def simplificarProd
+-- evalExpA (Prod e1 e2)
+-- ---------------------
+-- =                                       def evalExpA
+-- evalExpA e1 * evalExpA e2                         
+
+
+-- LD)
+
+-- evalExpA e1 * evalExpA e2
+
+ii.  cantidadSumaCero . simplificarExpA = const 0

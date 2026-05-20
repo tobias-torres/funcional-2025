@@ -1,6 +1,6 @@
 -- f []     =
 -- f (x:xs) = ... f xs
-import Prelude hiding ((++), reverse, length, sum, product, concat, elem, all, any, count, subset, zip, unzip)
+import Prelude hiding ((++), succ, reverse, length, sum, product, concat, elem, all, any, count, subset, zip, unzip)
 
 lista = [[23,33],[1],[45,66]]
 listaDos = [1,2,3,4,5,66]
@@ -118,4 +118,143 @@ prodN (S n) m = addN (prodN n m) m
 int2N  :: Int -> N
 int2N 0 = Z
 int2N n = S (int2N (n - 1))
+
+--------------------------------------------------------------------------------------------------
+
+type NU = [()] 
+
+nuList = [(),(),()]
+nuList2 = [(),(),(),()]
+
+data Unit = Unit 
+
+-- que describe el número representado por el elemento dado. 
+evalNU :: NU -> Int
+evalNU []     = 0
+evalNU (x:xs) = 1 + evalNU xs
+
+-- que describe la representación unaria del 
+-- resultado de sumarle uno al número representado por el argumento. 
+-- La resolución debe ser exclusivamente simbólica. 
+succNU  ::  NU -> NU
+succNU nu = ():nu
+
+-- que describe la representación unaria 
+-- de la suma de los números representados por los argumentos. La 
+-- resolución debe ser exclusivamente simbólica. 
+addNU :: NU -> NU -> NU
+addNU [] nu      = nu
+addNU (n:nu) nu2 = n : addNU nu nu2
+
+-- que describe la representación unaria dada por 
+-- el tipo N correspondiente al número representado por el argumento. 
+nu2n :: NU -> N
+nu2n []     = Z
+nu2n (n:nu) = S (nu2n nu)
+
+ 
+-- que describe la representación unaria dada por 
+-- el tipo NU correspondiente al número representado por el argumento. 
+n2nu :: N -> NU
+n2nu Z     = []
+n2nu (S n) = () : (n2nu n)
+
+-- Ejercicio 3
+
+type NBin = [DigBin]
+
+data DigBin = O | I deriving (Show)
+
+-- a.dado un símbolo que representa un dígito binario lo transforma en su significado como número
+dbAsInt :: DigBin -> Int
+dbAsInt O = 0
+dbAsInt I = 1
+
+-- b. que dado un símbolo que representa un dígito binario lo transforma en su significado como booleano.
+dbAsBool :: DigBin -> Bool
+dbAsBool I = True
+dbAsBool O = False
+
+-- c. que dado un booleano lo transforma en el símbolo que representa a ese booleano.
+dbOfBool :: Bool -> DigBin
+dbOfBool True = I
+dbOfBool False = O
+
+-- d. que dado un dígito binario lo transforma en el otro.
+negDB :: DigBin -> DigBin
+negDB I = O
+negDB O = I
+
+succNB :: NBin -> NBin
+succNB []     = [I]
+succNB (O:nb) = I : nb
+succNB (I:nb) = O : succNB nb
+
+addNB :: NBin -> NBin -> NBin
+addNB [] m = m
+addNB n [] = n
+addNB (n:nb) (m:mb) = f n m (addNB nb mb)
+
+f O O n = I : n
+f I I n = O : succNB n
+f _ _ n = I : n
+
+normalizarNB :: NBin -> NBin
+normalizarNB []     = []
+normalizarNB (n:nb) = normalizar n (normalizarNB nb)
+
+normalizar :: DigBin -> [DigBin] -> [DigBin]
+normalizar O [] = []
+normalizar d ds = d : ds
+
+n2nb :: N -> NBin
+n2nb Z     = []
+n2nb (S n) = succNB (n2nb n)
+
+evalNB :: NBin -> Int 
+evalNB []     = 0
+evalNB (n:nb) = dbAsInt n + 2 * ( evalNB nb )
+
+nb2n :: NBin -> N
+nb2n []     = Z
+nb2n (d:nb) = addN (evalD d) (prodN (S (S Z)) (nb2n nb))
+
+evalD O = Z
+evalD I = (S Z)
+
+-- Seccion III
+
+data ExpA = Cte Int | Suma ExpA ExpA | Prod ExpA ExpA
+
+evalExpA :: ExpA -> Int
+evalExpA (Cte n)      = n
+evalExpA (Suma e1 e2) = evalExpA e1 + evalExpA e2
+evalExpA (Prod e1 e2) = evalExpA e1 * evalExpA e2
+
+simplificarExpA  ::  ExpA  ->  ExpA
+simplificarExpA (Cte n)      = (Cte n)
+simplificarExpA (Suma e1 e2) = simplificarSuma (simplificarExpA expa1) (simplificarExpA expa2)
+simplificarExpA (Prod e1 e2) = simplificarProd (simplificarExpA expa1) (simplificarExpA expa2)
+
+simplificarSuma :: ExpA -> ExpA -> ExpA
+simplificarSuma (Cte 0) m = m
+simplificarSuma n (Cte 0) = n
+simplificarSuma n m       = Suma n m
+
+simplificarProd :: ExpA -> ExpA -> ExpA
+simplificarProd (Cte 0) _ = (Cte 0)
+simplificarProd _ (Cte 0) = (Cte 0)
+simplificarProd (Cte 1) m = m
+simplificarProd n (Cte 1) = n
+simplificarProd n m       = Prod n m
+
+cantidadDeSumaCero :: ExpA -> Int
+cantidadDeSumaCero (Cte n)      = 0
+cantidadDeSumaCero (Suma e1 e2) = analizarSumas e1 e2 + cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+cantidadDeSumaCero (Prod e1 e2) = cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+
+analizarSumas :: ExpA -> ExpA -> Int
+analizarSumas (Cte 0) n = 1
+analizarSumas n (Cte 0) = 1
+analizarSumas _ _       = 0
 
