@@ -1785,3 +1785,447 @@ evalExpA (simplificarProd (simplificarExpA expa1) (simplificarExpA expa2)) = eva
 -- evalExpA e1 * evalExpA e2
 
 ii.  cantidadSumaCero . simplificarExpA = const 0
+por ppio de extensionalidad 
+para todo expa. (cantidadSumaCero . simplificarExpA) expa= const 0 expa ?
+por def de (.)
+para todo expa. cantidadSumaCero (simplificarExpA expa) = const 0 expa ?
+por def de const
+para todo expa. cantidadSumaCero (simplificarExpA expa) = 0 ?
+sea expa1 de tipo ExpA, por ppio de induccion sobre la estructura de expa1, es equivalente demostrar que:
+
+Caso Base: expa = (Cte n)
+
+cantidadSumaCero (simplificarExpA (Cte n)) = 0 ?
+
+Caso Inductivo 1: expa = (Suma e1 e2)
+ 
+HI1) cantidadSumaCero (simplificarExpA e1) = 0 !
+HI2) cantidadSumaCero (simplificarExpA e2) = 0 !
+TI) cantidadSumaCero (simplificarExpA (Suma e1 e2)) = 0 ?
+
+Caso Inductivo 2: expa = (Prod e1 e2)
+ 
+HI1) cantidadSumaCero (simplificarExpA e1) = 0 !
+HI2) cantidadSumaCero (simplificarExpA e2) = 0 !
+TI) cantidadSumaCero (simplificarExpA (Prod e1 e2)) = 0 ?
+
+Caso Base
+
+I)
+
+cantidadSumaCero (simplificarExpA (Cte n))
+                  -----------------------
+=               def de simplificarExpA
+cantidadSumaCero (Cte n)
+-----------------------
+=               def de cantidadDeSumaCero
+0
+
+Caso Inductivo 1:
+
+I)
+
+cantidadSumaCero (simplificarExpA (Suma e1 e2))
+                  ----------------------------
+=               def de simplificarExpA
+cantidadDeSumaCero (simplificarSuma (simplificarExpA expa1) (simplificarExpA expa2))
+------------------------------------------------------------------------------------
+=               Lema-distr-sumacero
+cantidadSumaCero (simplificarExpA e1) + cantidadSumaCero (simplificarExpA e2)
+-------------------------------------
+=               HI1
+0 + cantidadSumaCero (simplificarExpA e2)
+    ------------------------------------
+=               HI2
+0 + 0
+
+Caso Inductivo 2:
+
+I)
+
+cantidadSumaCero (simplificarExpA (Prod e1 e2))
+                  -----------------------------
+=               def de simplificarExpA
+cantidadDeSumaCero (simplificarProd (simplificarProd e1) (simplificarProd e2))
+=               def de lema distr-prod
+
+
+
+HI1) cantidadSumaCero (simplificarExpA e1) = 0 !
+HI2) cantidadSumaCero (simplificarExpA e2) = 0 !
+
+-- ### LEMA llegarAHipotesis ###
+-- por ppio de extensionalidad
+-- para todo e1. para todo e2. cantidadDeSumaCero (simplificarProd e1 e2) = cantidadDeSumaCero e1 * cantidadDeSumaCero e2 ?
+-- voy a demostrar por casos:
+
+-- Caso1 = e1 = (Cte 0) y e2 es cualquier otra expresion
+
+-- cantidadDeSumaCero (simplificarProd (Cte 0) e2) = cantidadDeSumaCero (Cte 0) * cantidadDeSumaCero e2 ?
+
+-- LI)
+
+-- cantidadDeSumaCero (simplificarProd (Cte 0) e2)
+--                    ---------------------------
+-- =                                       def simplificarProd
+-- cantidadDeSumaCero (Cte 0)
+-- -------------------------
+-- =                                       def cantidadDeSumaCero
+-- 0
+
+-- LD)
+
+-- cantidadDeSumaCero (Cte 0) * cantidadDeSumaCero e2
+-- --------------------------
+-- =                                       def cantidadDeSumaCero
+-- 0 * cantidadDeSumaCero e2
+-- -------------------------
+-- =                                       0 absorbente
+-- 0
+
+-- Caso2 = e1 es cualquier otra expresion y e2 = (Cte 0)
+
+-- cantidadDeSumaCero (simplificarProd e1 (Cte 0)) = cantidadDeSumaCero e1 * cantidadDeSumaCero (Cte 0) ?
+
+-- LI)
+
+-- cantidadDeSumaCero (simplificarProd e1 (Cte 0))
+--                    ---------------------------
+-- =                                       def simplificarProd
+-- cantidadDeSumaCero (Cte 0)
+-- --------------------------
+-- =                                       def cantidadDeSumaCero
+-- 0
+
+-- LD)
+
+-- cantidadDeSumaCero e1 * cantidadDeSumaCero (Cte 0)
+--                         --------------------------
+-- =                                       def cantidadDeSumaCero
+-- cantidadDeSumaCero e1 * 0
+-- -------------------------
+-- =                                       0 es absorbente
+-- 0
+
+-- Caso3 = e1 es cualquier otra expresion y e2 = (Cte 1)
+
+-- cantidadDeSumaCero (simplificarProd e1 (Cte 1)) = cantidadDeSumaCero e1 * cantidadDeSumaCero (Cte 1) ?
+
+-- LI)
+
+-- cantidadDeSumaCero (simplificarProd e1 (Cte 1))
+--                     --------------------------
+-- =                                       def simplificarProd
+-- cantidadDeSumaCero e1
+
+-- LD)
+
+-- cantidadDeSumaCero e1 * cantidadDeSumaCero (Cte 1)
+--                         --------------------------
+-- =                                       def cantidadDeSumaCero
+-- cantidadDeSumaCero e1 * 1
+-- -------------------------
+-- =                                       1 es neutro en multiplicacion
+-- cantidadDeSumaCero e1
+
+
+-- Caso4 = e1 = (Cte 1) y e2 es cualquier otra expresion
+
+-- cantidadDeSumaCero (simplificarProd (Cte 1) e2) = cantidadDeSumaCero (Cte 1) * cantidadDeSumaCero e2 ?
+
+-- LI)
+
+-- cantidadDeSumaCero (simplificarProd (Cte 1) e2)
+--                     --------------------------
+-- =                                       def simplificarProd
+-- cantidadDeSumaCero e2
+
+-- LD)
+
+-- cantidadDeSumaCero (Cte 1) * cantidadDeSumaCero e2
+-- --------------------------
+-- =                                       def cantidadDeSumaCero
+-- cantidadDeSumaCero 1 * cantidadDeSumaCero e2
+-- --------------------
+-- =                                       1 es neutro en multiplicacion
+-- cantidadDeSumaCero e2
+
+
+-- Caso5 = e1 y e2 son cualquier expresion
+
+-- cantidadDeSumaCero (simplificarProd e1 e2) = cantidadDeSumaCero e1 * cantidadDeSumaCero e2 ?
+
+-- LI)
+
+-- cantidadDeSumaCero (simplificarProd e1 e2)
+--                    -----------------------
+-- =                                       def simplificarProd
+-- cantidadDeSumaCero (Prod e1 e2)
+-- -------------------------------
+-- =                                       def cantidadDeSumaCero
+-- cantidadDeSumaCero e1 * cantidadDeSumaCero e2
+
+-- LD)
+
+-- cantidadDeSumaCero e1 * cantidadDeSumaCero e2
+
+Lema: distr-sumacero
+Prop)por ppio de extensionalidad
+para todo e1. para todo e2. cantidadDeSumaCero (simplificarSuma e1 e2) = cantidadDeSumaCero e1 + cantidadDeSumaCero e2 ?
+
+voy a demostrar por casos:
+
+Caso 1: e1 = (Cte 0) y e2 != (Cte 0)
+
+cantidadDeSumaCero (simplificarSuma (Cte 0) (Cte 0)) = cantidadDeSumaCero (Cte 0) + cantidadDeSumaCero (Cte 0) ?
+
+Caso 2: e1 != (Cte 0) y e2 = (Cte 0)
+
+cantidadDeSumaCero (simplificarSuma (Cte 0) e2) = cantidadDeSumaCero (Cte 0) + cantidadDeSumaCero e2 ?
+
+Caso 3: e1 != (Cte 0) y e2 != (Cte 0)
+
+cantidadDeSumaCero (simplificarSuma e1 e2) = cantidadDeSumaCero e1 + cantidadDeSumaCero e2 ?
+
+Caso 1:
+
+I)
+
+cantidadDeSumaCero (simplificarSuma (Cte 0) m)
+                    -------------------------------
+=                       def simplificarSuma
+cantidadDeSumaCero m
+
+D)
+
+cantidadDeSumaCero (Cte 0) + cantidadDeSumaCero m
+-------------------------
+=                       def de cantidadDeSumaCero
+0 + cantidadDeSumaCero m
+------------------------
+=                       0 es el neutro
+cantidadDeSumaCero m
+
+
+Caso 2:
+
+I)
+
+cantidadDeSumaCero (simplificarSuma n (Cte 0))
+                    --------------------------
+=                       def simplificarSuma
+cantidadDeSumaCero n
+
+D)
+
+cantidadDeSumaCero n + cantidadDeSumaCero (Cte 0) ?
+                        ---------------------
+=                       def de cantidadDeSumaCero
+cantidadDeSumaCero n + 0
+----------------------
+=                       0 es el neutro
+cantidadDeSumaCero n 
+
+Caso 3:
+
+I)
+
+cantidadDeSumaCero (simplificarSuma e1 e2) 
+                   -----------------------
+=                       def de simplificarSuma
+cantidadDeSumaCero (Suma e1 e2)
+-------------------------------
+=                       def de cantidadDeSumaCero
+analizarSumas e1 e2 + cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+-------------------
+=                       def de analizarSumas
+0 + cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+-------------------------------------------------
+=                       cero es el neutro
+cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+
+D)
+
+cantidadDeSumaCero e1 + cantidadDeSumaCero e2
+
+-- b
+
+-- i 
+evalExpA . es2ExpA = evalES ?
+para todo es. (evalExpA . es2ExpA) es = evalES es ?
+por def de (.)
+para todo es. evalExpA (es2ExpA es) = evalES es?
+sea exps de tipo ExpS, por ppio de induccion en la estructura de exps, es equivalente demostrar que:
+
+Caso Base: exps = (CteS n)
+
+evalExpA (es2ExpA (CteS n)) = evalES (CteS n) ?
+
+Caso Inductivo 1: exps = SumS e1 e2
+
+HI1) evalExpA (es2ExpA e1) = evalES e1 !
+HI2) evalExpA (es2ExpA e2) = evalES e2 !
+TI) evalExpA (es2ExpA (SumS e1 e2)) = evalES (SumS e1 e2) ?
+
+Caso Inductivo 2: exps = ProdS e1 e2
+
+HI1) evalExpA (es2ExpA e1) = evalES e1 !
+HI2) evalExpA (es2ExpA e2) = evalES e2 !
+TI) evalExpA (es2ExpA (ProdS e1 e2)) = evalES (ProdS e1 e2) ?
+
+Caso Base:
+
+I)
+
+evalExpA (es2ExpA (CteS n))
+         -----------------
+=               def de es2ExpA
+evalExpA (Cte (evalN n))
+-------------------------
+=               def de evalExpA
+evalN n
+
+D)
+
+evalES (CteS n)
+---------------
+=               def de evalES
+evalN n
+
+Caso Inductivo 1:
+
+I)
+
+evalExpA (es2ExpA (SumS e1 e2))
+          --------------------
+=               def de es2ExpA
+evalExpA (SumS (es2ExpA e1) (es2ExpA e2))
+---------------------------------------------
+=               def de evalExpA
+evalExpA (es2ExpA e1) + evalExpA (es2ExpA e1)
+--------------------
+=               HI1
+evalES e1 + evalExpA (es2ExpA e2)
+            ---------------------
+=               HI2
+evalES e1 + evalES e2
+
+
+D)
+
+evalES (SumS e1 e2)
+-------------------
+=               def de evalES
+evalES e1 + evalES e2
+
+Caso Inductivo 2:
+
+I)
+
+evalExpA (es2ExpA (ProdS e1 e2))
+         ----------------------
+=               def de es2ExpA
+evalExpA (Prod (es2ExpA e1) (es2ExpA e2))
+-----------------------------------------
+=               def evalExpA
+evalExpA (es2ExpA e1) * evalExpA (es2ExpA e2)
+
+D)
+
+evalES (ProdS e1 e2)
+--------------------
+=               def de evalES
+evalES e1 * evalES e2
+---------
+=               HI1
+evalExpA (es2ExpA e1) * evalES e2
+                        ---------
+=               HI2
+evalExpA (es2ExpA e1) * evalExpA (es2ExpA e2)
+
+-- iii
+
+es2ExpA . expA2es = id 
+Dem) por ppio de extensionalidad
+para todo ea. (es2ExpA . expA2es) ea = id ea ?
+por def de (.)
+para todo ea. es2ExpA (expA2es ea) = id ea ?
+por def de id
+ es2ExpA (expA2es ea) = ea ?
+sea exp un elemento de tipo ExpA, por ppio de inducción sobre la estructura de exp, es equivalente demostrar que:
+
+Caso Base: exp = (Cte n)
+
+es2ExpA (expA2es (Cte n)) = id (Cte n) ?
+
+Caso Inductivo 1: exp = (Suma e1 e2)
+
+HI1) es2ExpA (expA2es e1) = e1 !
+HI2) es2ExpA (expA2es e2) = e2 !
+TI)  es2ExpA (expA2es (Suma e1 e2)) = Suma e1 e2 ?
+
+Caso Inductivo 2: exp = (Prod e1 e2)
+
+HI1) es2ExpA (expA2es e1) = e1 ! 
+HI2) es2ExpA (expA2es e2) = e2 !
+TI) es2ExpA (expA2es (Prod e1 e2)) = (Prod e1 e2) ?
+
+Caso Base:
+
+I)
+
+es2ExpA (expA2es (Cte n))
+         ---------------
+=       def de expA2es
+es2ExpA (Ctes (int2N n))
+------------------------
+=       def de es2ExpA
+Cte (evalN (int2N n))
+
+D) 
+
+Cte n 
+
+Caso Inductivo 1: 
+
+I)
+
+es2ExpA (expA2es (Suma e1 e2))
+         -------------------
+=               def de expA2es
+es2ExpA (SumS (expA2es e1) (expA2es e2))
+-----------------------------------------
+=               def de es2ExpA
+Suma (es2ExpA (expA2es e1)) (es2ExpA (expA2es e2))
+      --------------------
+=               H1
+Suma e1 (es2ExpA (expA2es e2))
+        ---------------------
+=               H2
+Suma e1 e2
+
+D)
+
+Suma e1 e2 
+
+Caso Inductivo 2:
+
+I)
+
+es2ExpA (expA2es (Prod e1 e2))
+         --------------------
+=               def de expA2es
+es2ExpA (ProdS (expA2es e1) (expA2es e2))
+-----------------------------------------
+=               def de es2ExpA
+Prod (es2ExpA (expA2es e1)) (es2ExpA (expA2es e2))
+     ---------------------
+=               HI1
+Prod e1 (es2ExpA (expA2es e2))
+        ---------------------
+=               HI2
+Prod e1 e2
+
+D)
+
+(Prod e1 e2)

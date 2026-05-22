@@ -258,3 +258,25 @@ analizarSumas (Cte 0) n = 1
 analizarSumas n (Cte 0) = 1
 analizarSumas _ _       = 0
 
+data ExpS = CteS N | SumS ExpS ExpS | ProdS ExpS ExpS
+
+evalES :: ExpS -> Int
+evalES (CteS n)          = evalN n
+evalES (SumS exp1 exp2)  = evalES exp1 + evalES exp2
+evalES (ProdS exp1 exp2) = evalES exp1 * evalES exp2
+
+es2ExpA  ::  ExpS  ->  ExpA
+es2ExpA (CteS n)          = Cte (evalN n)
+es2ExpA (SumS exp1 exp2)  = Suma (es2ExpA exp1) (es2ExpA exp2)
+es2ExpA (ProdS exp1 exp2) = Prod (es2ExpA exp1) (es2ExpA exp2)
+
+expA2es  ::  ExpA -> ExpS
+expA2es (Cte n)            = CteS (int2N n)
+expA2es (Suma expa1 expa2) = SumS (expA2es expa1) (expA2es expa2)
+expA2es (Prod expa1 expa2) = ProdS (expA2es expa1) (expA2es expa2)
+
+evalExpA :: ExpA -> Int
+evalExpA (Cte n)      = n
+evalExpA (Suma e1 e2) = evalExpA e1 + evalExpA e2
+evalExpA (Prod e1 e2) = evalExpA e1 * evalExpA e2
+
