@@ -571,7 +571,117 @@ reverse (xs' ++ x : [] ++ zs) ++ [x]
 =                       def de ++
 reverse (xs' ++ (x : zs)) ++ [x]
 
+----------------------------------------------------------------------------------
 
+i. para todo xs :: AppList a. para todo ys :: AppList a. lenAL (appendAL xs ys) = lenAL xs + lenAL ys
+sea ap1 y ap2 de tipo AppList a, por ppio de induccion sobre la estructura de ap1, es equivalente demostrar que:
+
+Caso Base: ap1 = Single x)
+
+lenAL (appendAL (Single x) ap2) = lenAL (Single x) + lenAL ap2 ?
+
+Caso Inductivo: ap1 = Append xs' ys'
+
+HI) lenAL (appendAL xs' ap2) = lenAL xs' + lenAL ap2 !
+TI) lenAL (appendAL (Append xs' ys') ap2) = lenAL (Append xs' ys') + lenAL ap2 ?
+
+
+Caso Base:
+
+I)
+
+lenAL (appendAL (Single x) ap2)
+        ----------------------
+=                               def de appendAL
+lenAL (Append (Single x) ap2)
+-----------------------------
+=                               def de lenAL
+lenAL (Single x) + lenAL ap2
+
+D)
+
+lenAL (Single x) + lenAL ap2
+
+
+Caso Inductivo:
+
+I)
+
+lenAL (appendAL (Append xs' ys') ap2)
+        ----------------------------
+=                               def de appendAL
+lenAL (Append (Append xs' ys') ap2)
+-----------------------------------
+=                               def de lenAL
+lenAL (Append xs' ys') + lenAL ap2
+
+
+D)
+
+lenAL (Append xs' ys') + lenAL ap2
+
+
+
+ii. reverseAL . reverseAL = id
+por ppio de extensionalidad
+para todo xs. (reverseAL . reverseAL) xs = id xs ?
+por def de (.)
+para todo xs. reverseAL (reverseAL xs) = id xs ?
+por def de id
+para todo xs. reverseAL (reverseAL xs) = id ?
+sea ap de tipo AppList a, por ppio de induccion sobre la estructura de ap, es equivalente demostrar que:
+
+Caso Base: ap = (Single x)
+
+reverseAL (reverseAL (Single x)) = (Single x) ?
+
+Caso Inductivo : ap = (Append xs' ys)
+
+HI1) reverseAL (reverseAL xs') = xs' !
+HI2) reverseAL (reverseAL ys) = ys !
+TI) reverseAL (reverseAL (Append xs' ys)) = (Append xs' ys) ?
+
+Caso Base:
+
+I)
+
+reverseAL (reverseAL (Single x))
+           ---------------------
+=                       def de reverseAL
+reverseAL (Single x)
+--------------------
+=                       def de reverseAL
+(Single x)
+
+
+Caso Inductivo:
+
+I)
+
+reverseAL (reverseAL (Append xs' ys))
+          --------------------------
+=                       def de reverseAL
+reverseAL (Append (reverseAL ys) (reverseAL xs'))
+-------------------------------------------------
+=                       def reverseAL
+Append (reverseAL xs') (reverseAL ys)
+        -------------  -------------
+=                       HI1, HI2
+Append xs' ys
+
+iii. (reverseAL .) . flip consAL . reverseAL = snocAL
+por ppio de extensionalidad
+para todo ap. para todo x ((reverseAL .) . flip consAL . reverseAL) ap x = snocAL ap x ?
+por def de (.)
+para todo ap. para todo x. ((reverseAL .) . flip consAL) (reverseAL ap) x = snocAL ap x ?
+por def de (.)
+para todo ap. para todo x. (reverseAL . flip consAL (reverseAL ap)) x = snocAL ap x ?
+por def de (.)
+para todo ap. para todo x. reverseAL (flip consAL (reverseAL ap) x) = snocAL ap x ?
+def de flip
+para todo ap. para todo x. reverseAL (consAL x (reverseAL ap)) = snocAL ap x ?
+def de consAL
+para todo ap. para todo x. reverseAL (Append (Single x) (reverseAL ap))
 
 
 

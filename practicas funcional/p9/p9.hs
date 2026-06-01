@@ -274,7 +274,15 @@ transformar q1 q2 q3 q4 = NodeQ q1 q2 q3 q4
 
 qt = NodeQ (LeafQ 4) (LeafQ 4) (LeafQ 4) (LeafQ 4)
 
--- v. uncompress :: QuadTree a -> QuadTree a, que describe el
--- árbol resultante de transformar en nodo (manteniendo el dato de la
--- hoja correspondiente) todas aquellas hojas que no se encuentren en
--- el nivel de la altura del árbol.
+-- v. , que describe el
+-- árbol resultante de transformar en nodo (manteniendo el dato de la hoja correspondiente) todas aquellas hojas que no se encuentren en el nivel de la altura del árbol.
+
+uncompress :: QuadTree a -> QuadTree a
+uncompress quadTree = descomprimir (heightQT quadTree) quadTree
+
+descomprimir :: Int -> QuadTree a -> QuadTree a
+descomprimir 0 (LeafQ x)           = (LeafQ x)
+descomprimir 0 _                   = error "No se puede sacar"
+descomprimir n (LeafQ x)           = NodeQ (descomprimir (n-1) (LeafQ x)) (descomprimir (n-1) (LeafQ x)) (descomprimir (n-1) (LeafQ x)) (descomprimir (n-1) (LeafQ x))
+descomprimir n (NodeQ q1 q2 q3 q4) = NodeQ (descomprimir (n-1) q1) (descomprimir (n-1) q2) (descomprimir (n-1) q3) (descomprimir (n-1) q4)
+

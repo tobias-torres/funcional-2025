@@ -36,7 +36,7 @@ foldr' f z []     = z
 foldr' f z (x:xs) = f x (foldr' f z xs)
 
 takeF :: Int -> ([a] -> [a])
-takeF n [] = []
+takeF n []     = []
 takeF n (x:xs) = if n==0 then [] else x : takeF (n-1) xs
 
 takeL :: Int -> [a] -> [a]
