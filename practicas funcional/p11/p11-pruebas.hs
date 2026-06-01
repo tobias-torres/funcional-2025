@@ -50,3 +50,25 @@ takeF n (x:xs) = if n==0 then [] else x : takeF (n-1) xs
 
 take' :: Int -> [a] -> [a]
 take' = flip (foldr (\x h n -> if n == 0 then [] else x : h (n-1)) (const []))
+
+cantTotal :: [[a]] -> Int
+cantTotal []       = 0
+cantTotal (xs:xss) = length xs + cantTotal xss
+
+
+cantTotal' :: [[a]] -> Int
+cantTotal' = foldr (\xs n -> length xs + n) 0
+-- cantTotal = foldr ((+) . length) 0
+
+insert :: Ord a => a -> [a] -> [a]
+insert x []     = [x]
+insert x (y:ys) = if x <= y
+                    then x : y : ys
+                    else y : insert x ys
+
+recr :: b -> (a -> [a] -> b -> b) -> [a] -> b
+recr z f []     = z
+recr z f (x:xs) = f x xs (recr z f xs)
+
+insert' x = recr [x] (\y ys rs -> if x <= y then x : y : ys else y : rs)
+
