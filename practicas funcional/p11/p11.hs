@@ -217,3 +217,46 @@ zipWith' f = foldr (\x xs ys -> case ys of
 -- drop :: Int -> [a] -> [a] 
 -- -- elemAt :: Int -> [a] -> a
 
+-- Ejercicio 10
+
+-- a.  filter id :: [Bool] -> [Bool]
+
+-- b.  map (\x y z -> (x, y, z))
+
+-- map                       :: (a -> b) -> [a] -> [b]
+-- (\x y z -> (x, y, z))     :: a -> b -> c -> (a, b, c)
+-- ---------------------------------------------------------
+-- map (\x y z -> (x, y, z)) :: [a] -> [b -> c -> (a, b, c)]
+
+
+-- c.  map (+) :: [Int] -> [Int] -> [Int]
+
+-- map     :: (a -> b) -> [a] -> [b]
+-- (+)     :: Int -> (Int -> Int)
+-- ---------------------------------------------------------
+-- map (+) :: [Int] -> [Int -> Int]
+
+
+-- d.  filter fst 
+filter     :: (a -> Bool) -> [a] -> [a]
+fst        :: (a, b) -> a
+--------------------------------------------------------- a -> (a, b), Bool -> a
+filter fst :: [(Bool, b)] -> [(Bool, b)]
+
+
+-- e.  filter (flip const (+))
+filter                  :: (a -> Bool) -> [a] -> [a]
+(flip const (+))        :: 
+--------------------------------------------------------- 
+filter (flip const (+)) :: 
+
+
+-- flip  :: (a -> b -> c) -> a -> c -> b
+-- const :: a -> b -> a
+-- (+)   :: Int -> (Int -> Int)
+
+-- f.  map const 
+-- g.  map twice 
+-- h.  foldr twice 
+-- i.  zipWith fst 
+-- j.  foldr (\x r z -> (x, z) : r z) (const []) 
