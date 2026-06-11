@@ -205,17 +205,44 @@ zipWith' f = foldr (\x xs ys -> case ys of
                                 [] -> []
                                 (y:ys') -> f x y : xs ys') (const [])
 
-
 -- zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 -- zipWith f [] ys     = []
 -- zipWith f xs []     = []
 -- zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 
--- scanr :: (a -> b -> b) -> b -> [a] -> [b] 
--- takeWhile :: (a -> Bool) -> [a] -> [a] 
--- take :: Int -> [a] -> [a] 
--- drop :: Int -> [a] -> [a] 
--- -- elemAt :: Int -> [a] -> a
+-- scanr :: (a -> b -> b) -> b -> [a] -> [b]
+-- scanr f z []     = [z]
+-- scanr f z (x:xs) = f x ( head rs ) : rs
+--   where rs = scanr f z xs
+
+scanr' :: (a -> b -> b) -> b -> [a] -> [b] 
+scanr' f z = foldr (\x rs -> f x (head rs) : rs) [z]
+
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile f = foldr (\x rs -> if f x then x : rs else []) []
+
+take :: Int -> [a] -> [a] 
+take = flip (foldr (\x rs n -> if n == 0 then [] else x : rs (n-1)) (const []))
+
+drop :: Int -> [a] -> [a] 
+drop = flip (foldr (\x rs n -> case n of 
+                        0 -> x : rs 0
+                        n -> rs (n-1)) (const []))
+
+-- drop :: Int -> [a] -> [a]
+-- drop n []     = []
+-- drop 0 xs     = xs
+-- drop n (_:xs) = drop (n-1) xs
+
+-- elemAt :: Int -> [a] -> a
+-- elemAt n []     = error "no existe elemento"
+-- elemAt 0 (x:xs) = x
+-- elemAt n (_:xs) = elemAt (n-1) xs
+
+elemAt :: Int -> [a] -> a
+elemAt = flip (foldr (\x r n -> case n of
+                                0 -> x
+                                n -> r (n-1)) (const (error "no existe ese elemento")))
 
 -- Ejercicio 10
 
