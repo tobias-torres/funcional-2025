@@ -1,3 +1,5 @@
+import Prelude hiding (Left, Right, Straight)
+
 data ExpA = Cte Int | Suma ExpA ExpA | Prod ExpA ExpA
 
 foldExpA :: (Int -> b) -> (b -> b -> b) -> (b -> b -> b) -> ExpA -> b
@@ -279,19 +281,18 @@ insertT :: Ord a => a -> Tree a -> Tree a
 -- insertT e = recT (NodeT e EmptyT EmptyT) (\x t1 t2 t t' -> if e < x then NodeT x t t2 else NodeT x t1 t')
 insertT = flip (recT (\e -> NodeT e EmptyT EmptyT) (\x t1 t2 t t' e -> if e < x then NodeT x (t e) t2 else NodeT x t1 (t' e)))
 
-arbol1 :: Tree Int
-arbol1 = NodeT 8 
-              (NodeT 6 (NodeT 4 
-                              (NodeT 2 EmptyT EmptyT)
-                               EmptyT)
-							         (NodeT 7 EmptyT EmptyT))
-				      (NodeT 10 (NodeT 9 EmptyT EmptyT)
-							          (NodeT 11 EmptyT EmptyT))
+-- arbol1 :: Tree Int
+-- arbol1 = NodeT 8 
+--               (NodeT 6 (NodeT 4 
+--                               (NodeT 2 EmptyT EmptyT)
+--                                EmptyT)
+-- 							         (NodeT 7 EmptyT EmptyT))
+-- 				      (NodeT 10 (NodeT 9 EmptyT EmptyT)
+-- 							          (NodeT 11 EmptyT EmptyT))
 
 caminoHasta :: Eq a => a -> Tree a -> [a]
 caminoHasta e = (foldT [] (\x t t' -> if x == e then [x] else if null (t ++ t') then [] else x : (t ++ t')))
 -- caminoHasta = flip (foldT (\e -> []) (\x t t' e -> if x == e then [x] else if null ((t e) ++ (t' e)) then [] else x : ((t e)++ (t' e))))
-
 
 -- caminoHasta e EmptyT          = []
 -- caminoHasta e (NodeT x t1 t2) = if x == e 
@@ -301,9 +302,287 @@ caminoHasta e = (foldT [] (\x t t' -> if x == e then [x] else if null (t ++ t') 
 --                                             else x : resultadoHijos
 --                                         where resultadoHijos = caminoHasta e t1 ++ caminoHasta e t2
 
+-- i.
+-- para todo f. sizeT . mapT f = sizeT
+-- para todo f. para todo t. (sizeT . mapT f) t = sizeT t ?
+-- por def de (.)
+-- para todo f. para todo t. sizeT (mapT f t) = sizeT t ?
+-- sea g una funcion, t' un tipo :: Tree a, por ppio de induccion sobre la estructura de t', es equivalente demostrar que:
+
+-- Caso Base: t' = EmptyT
+
+-- sizeT (mapT g EmptyT) = sizeT EmptyT ?
+
+-- Caso Induccion: t' = (NodeT x t1 t2)
+
+-- HI1) sizeT (mapT g t1) = sizeT t1 !
+-- HI2) sizeT (mapT g t2) = sizeT t2 !
+-- TI) sizeT (mapT g (NodeT x t1 t2)) = sizeT (NodeT x t1 t2) ?
+
+-- Caso Base:
+
+-- I)
+
+-- sizeT (mapT g EmptyT)
+--        -------------
+-- =                   
+-- sizeT EmptyT
+
+-- D)
+
+-- sizeT EmptyT
+
+-- Caso Inductivo:
+
+-- I)
+
+-- sizeT (mapT g (NodeT x t1 t2))
+--        ----------------------
+-- =                       def de mapT
+-- sizeT (NodeT (g x) (mapT g t1) (mapT g t2))
+-- -------------------------------------------
+-- =                       def de sizeT
+-- 1 + sizeT (mapT g t1) + sizeT (mapT g t2)
+--     ----------------    -----------------
+-- =                       HI1, HI2
+-- 1 + sizeT t1 + sizeT t2
+
+-- D)
+
+-- sizeT (NodeT x t1 t2)
+-- ---------------------
+-- =                       def de sizeT
+-- 1 + sizeT t1 + sizeT t2
 
 
+-- ii. para todo f. para todo g. mapT f . mapT g = mapT (f . g) ?
+-- para todo f. para todo g. para todo t. (mapT f . mapT g) t = mapT (f . g) t ?
+-- por def de (.)
+-- para todo f. para todo g. para todo t. mapT f (mapT g t) = mapT f (g t) ? 
+-- sea f' y g' dos funciones y t' de tipo :: Tree a, por ppio de induccion sobre la estructura de t', es equivalente demostrar que:
+
+-- Caso Base: t' = EmptyT
+
+-- mapT f' (mapT g' EmptyT) = mapT f' (g' EmptyT) ?
+
+-- Caso Inductivo: t' = (NodeT x t1 t2)
+
+-- HI1) mapT f' (mapT g' t1) = mapT f' (g' t1) !
+-- HI2) mapT f' (mapT g' t2) = mapT f' (g' t2) !
+-- TI) mapT f' (mapT g' (NodeT x t1 t2)) = mapT f' (g' (NodeT x t1 t2)) ?
+
+-- Caso Base:
+
+-- I)
+
+-- mapT f' (mapT g' EmptyT)
+--         ---------------
+-- =                       def de mapT
+-- mapT f' EmptyT
+
+-- D)
+
+-- mapT f' (g' EmptyT)
 
 
+-- Ejercicio 4
+
+data Dir = Left | Right | Straight deriving (Show)
+
+data Mapa a = Cofre [a]  
+            | Nada (Mapa a)  
+            | Bifurcacion [a] (Mapa a) (Mapa a)
+
+-- a
+
+foldM :: ([a] -> b) -> (b -> b) -> ([a] -> b -> b -> b) -> Mapa a -> b
+foldM fc fn fb (Cofre xs)             = fc xs
+foldM fc fn fb (Nada m)               = fn (foldM fc fn fb m)
+foldM fc fn fb (Bifurcacion xs m1 m2) = fb xs (foldM fc fn fb m1) (foldM fc fn fb m2)
+
+recM :: ([a] -> b) -> (Mapa a -> b -> b) -> ([a] -> Mapa a -> Mapa a -> b -> b -> b) -> Mapa a -> b
+recM fc fn fb (Cofre xs)             = fc xs
+recM fc fn fb (Nada m)               = fn m (recM fc fn fb m)
+recM fc fn fb (Bifurcacion xs m1 m2) = fb xs m1 m2 (recM fc fn fb m1) (recM fc fn fb m2)
+
+-- i. , que describe la lista de todos los objetos presentes en el mapa dado.
+objects  :: Mapa a -> [a]
+objects = foldM id id (\xs m1 m2 -> xs ++ m1 ++ m2)
+                    -- ((++) .) . (++)
+
+-- ii. , que transforma los objetos del mapa dado aplicando la función dada.
+mapM :: (a -> b) -> Mapa a -> Mapa b
+-- mapM f = foldM (\xs -> Cofre (map f xs)) (\m -> m ) (\xs m1 m2 -> Bifurcacion (map f xs) m1 m2)
+mapM f = foldM (Cofre . map f) id ( Bifurcacion . map f)
+
+-- iii. , que indica si existe algún objeto que cumpla con la condición dada en el mapa dado.
+has :: (a -> Bool) -> Mapa a -> Bool
+-- has f = foldM (\xs -> any f xs) id (\xs m1 m2 -> any f xs || m1 || m2 )
+has f = foldM (any f) id (\xs m1 m2 -> any f xs || m1 || m2)
+
+-- iv. , que indica si un objeto al final del camino dado cumple con la condición dada en el mapa dado. 
+hasObjectAt :: (a -> Bool) -> Mapa a -> [Dir] -> Bool
+hasObjectAt f = foldM (\xs ds -> null ds && any f xs) 
+                      (\m ds -> case ds of
+                                    Straight:ds' -> m ds'
+                                    _           -> False)
+                      (\xs m1 m2 ds -> case ds of 
+                                        Left:ds'  -> m1 ds'
+                                        Right:ds' -> m2 ds')
 
 
+mapa = Bifurcacion [3] 
+                    (Nada (Cofre [2,3,4]))
+                    (Bifurcacion [55] 
+                                    (Nada (Cofre [5,6,7])) 
+                                    (Nada 
+                                        (Bifurcacion [8,9] 
+                                                          (Nada (Cofre []))
+                                                          (Cofre []))))
+
+-- longestPath :: Mapa a -> [Dir]
+-- longestPath = foldM (\xs -> [])
+--                     (\m -> Straight:m )
+--                     (\xs m1 m2 -> if length m1 > length m2
+--                                  then Left : m1
+--                                  else Right : m2)
+
+longestPath :: Mapa a -> [Dir]
+longestPath = snd . foldM (\xs -> (0, []))
+                          (\(n,m) -> (n+1, Straight:m ))
+                          (\xs (n,m1) (m,m2) -> if n > m
+                                                    then (n+1, Left : m1)
+                                                    else (m+1, Right : m2))
+
+objectsOfLongestPath :: Mapa a -> [a]
+objectsOfLongestPath = snd . foldM (\xs -> (0,xs))
+                                   (\(n,m) -> (n+1, m))
+                                   (\xs (n,m1) (m,m2) -> if n > m
+                                                    then (n+1, xs ++ m1)
+                                                    else (m+1, xs ++ m2))
+
+allPaths :: Mapa a -> [[Dir]]
+allPaths = foldM (\xs -> [[]])
+                 (\dirs  -> map (Straight :) dirs)
+                 (\xs dirs1 dirs2 -> map (Left :) dirs1 ++ map (Right :) dirs2)
+
+-- allPaths :: Mapa a -> [[Dir]]
+-- allPaths (Cofre xs)             = [[]]
+-- allPaths (Nada m)               = map (Straight :) (allPaths m)
+-- allPaths (Bifurcacion xs m1 m2) = map (Left :) (allPaths m1) ++ map (Right :) (allPaths m2)
+
+-- , que describe la lista con todos los objetos por niveles del mapa dado.
+objectsPerLevel  ::  Mapa a -> [[a]] 
+objectsPerLevel = foldM (\xs -> [xs])
+                        (\objs -> []:objs)
+                        (\xs objs1 objs2 -> xs : concatPerLevel objs1 objs2)
+
+
+-- todosLosNiveles :: Tree a -> [[a]]
+-- todosLosNiveles EmptyT          = []
+-- todosLosNiveles (NodeT x t1 t2) = [x] : concatPerLevel (todosLosNiveles t1) (todosLosNiveles t2)
+
+-- concatPerLevel :: [[a]] -> [[a]] -> [[a]]
+-- concatPerLevel [] yss           = yss
+-- concatPerLevel xss []           = xss
+-- concatPerLevel (xs:xss)(ys:yss) = (xs ++ ys) : concatPerLevel xss yss
+
+-- Ejercicio 7) 
+
+type Record f v = [(f,v)] 
+
+-- donde la idea de este tipo es representar una fila de una base de datos (el valor de 
+-- tipo f es el nombre del campo, y el valor de tipo v es el valor de ese campo). Por 
+-- ejemplo, para representar una fila de una base de datos de personas, se puede usar 
+-- el siguiente dato:  
+
+-- [("nombre","Grace"),("apellido","H"),("edad", "42"),("género","F"),("salario","120")] :: Record String String
+
+type Table f v = [ Record f v ]
+
+str2num :: String -> Int
+str2num = read
+
+personas =  
+            [ 
+              [("nombre","Graciela"),("apellido","H") 
+              ,("edad", "42"),("genero","F"),("salario","120")] 
+            , [("nombre","Alonso"),("apellido","Ch") 
+              ,("edad", "35"),("genero","M"),("salario","250")] 
+            , [("nombre","Adela"),("apellido","G") 
+              ,("edad", "39"),("genero","F"),("salario","130")] 
+            , [("nombre","Fer"),("apellido","R") 
+              ,("edad", "22"),("genero","X"),("salario","100")] 
+            , [("nombre","Felipe"),("apellido","W") 
+              ,("edad", "50"),("genero","M"),("salario","280")] 
+            ]
+
+-- a. 
+-- que a partir de la lista de registros dada describe la lista de los registros que cumplen con la condición dada. 
+-- Por ejemplo, 
+        
+--         select (\r -> elem ("género", "F") r) 
+
+-- selecciona todos los registros de personas de género femenino. 
+-- Otro ejemplo es
+        
+--         select (\r -> any (\(c,v) -> c=="salario" && str2num v < 200) r)
+
+-- que selecciona todos los registros de personas con salarios por debajo de 200.
+
+select :: (Record f v -> Bool) -> Table f v -> Table f v
+-- select f = (\r -> filter f r)
+-- select f = (filter f)
+select = filter
+
+-- b.
+-- que a partir de la lista de registros dada describe la lista de registros solo con los campos que cumplen la condición dada. 
+-- Por ejemplo, 
+
+        -- project (\f -> f=="nombre" || f=="apellido") 
+
+-- selecciona los campos nombre y apellido de un tabla. 
+
+project :: (f -> Bool) -> Table f v -> Table f v
+-- project p = map (filter (\cv -> p (fst cv)))
+-- project p = map (filter (p . fst))
+project = map . filter . (. fst)
+
+-- c.
+-- , que describe el predicado que da True solo cuando los dos predicados dados lo hacen. 
+-- Por ejemplo, 
+   
+      -- conjunt (=="nombre") (=="apellido") 
+
+-- es otra forma de escribir la condición del ejemplo anterior. 
+
+conjunct :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+conjunct p1 p2 e = p1 e && p2 e
+
+
+-- d.  
+-- que describe el resultado de aplicar una función a cada elemento del producto cartesiano 
+-- de las dos listas dadas. 
+    -- Por ejemplo 
+    
+          -- crossWith (+) [1,2,3] [10,20] 
+    
+    -- da como resultado [11,21,12,22,13,23].
+
+crossWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+crossWith f xs ys = concat (map (\x -> map (f x) ys) xs)
+-- crossWith f xs ys = concatMap (\x -> map (f x) ys ) xs
+
+-- e.
+
+-- , que describe la lista de registros resultante del producto cartesiano combinado de las dos 
+-- listas de registros dadas. Es decir, la unión de los campos en los registros del 
+-- producto cartesiano. 
+
+product' :: Table f v -> Table f v -> Table f v
+product' = crossWith (++)
+
+r1 = [[("apellido","W"),("idMat","42")], [("apellido","G"),("idMat","17")]]
+        
+r2 = [[("idMat", "17"),("nomMat","PO")], [("idMat","666"),("nomMat","PI")],
+        [("idMat", "42"),("nomMat","PF")]] 
