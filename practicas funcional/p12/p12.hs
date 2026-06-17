@@ -586,3 +586,20 @@ r1 = [[("apellido","W"),("idMat","42")], [("apellido","G"),("idMat","17")]]
         
 r2 = [[("idMat", "17"),("nomMat","PO")], [("idMat","666"),("nomMat","PI")],
         [("idMat", "42"),("nomMat","PF")]] 
+
+r3 = [("apellido","W"), ("idMat","42"), ("idMat","42"), ("nombreMat","PF")]
+
+-- que describe el registro 
+-- resultante de descartar datos cuyos campos sean iguales (o sea, el mismo 
+-- dato asociado al mismo campo). 
+-- Por ejemplo,  
+-- similar 
+--     [("apellido","W"),("idMat","42")    ,("idMat","42"),("nombreMat","PF")] 
+-- da como resultado 
+--  [("apellido","W"),("idMat","42")    ,("nombreMat","PF")]
+
+similar :: (Eq f, Eq v) => Record f v -> Record f v
+similar = sinRepetidos
+
+sinRepetidos :: Eq a => [a] -> [a]
+sinRepetidos = foldr (\x xs -> if elem x xs then xs else x: xs) []
