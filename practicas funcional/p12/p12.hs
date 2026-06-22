@@ -503,20 +503,6 @@ type Table f v = [ Record f v ]
 str2num :: String -> Int
 str2num = read
 
-personas =  
-            [ 
-              [("nombre","Graciela"),("apellido","H") 
-              ,("edad", "42"),("genero","F"),("salario","120")] 
-            , [("nombre","Alonso"),("apellido","Ch") 
-              ,("edad", "35"),("genero","M"),("salario","250")] 
-            , [("nombre","Adela"),("apellido","G") 
-              ,("edad", "39"),("genero","F"),("salario","130")] 
-            , [("nombre","Fer"),("apellido","R") 
-              ,("edad", "22"),("genero","X"),("salario","100")] 
-            , [("nombre","Felipe"),("apellido","W") 
-              ,("edad", "50"),("genero","M"),("salario","280")] 
-            ]
-
 -- a. 
 -- que a partir de la lista de registros dada describe la lista de los registros que cumplen con la condición dada. 
 -- Por ejemplo, 
@@ -603,3 +589,52 @@ similar = sinRepetidos
 
 sinRepetidos :: Eq a => [a] -> [a]
 sinRepetidos = foldr (\x xs -> if elem x xs then xs else x: xs) []
+
+
+data Query f v
+              = Table [Record f v] -- Table (Table f v)
+              | Product (Query f v) (Query f v)
+              | Projection (f -> Bool) (Query f v)
+              | Selection (Record f v -> Bool) (Query f v)
+
+foldQ :: ([Record f v] -> b) -> (b -> b -> b) -> ((f -> Bool) -> b -> b) -> ((Record f v -> Bool) -> b -> b) -> (Query f v) -> b
+foldQ ft fprod fproj fs (Table records)        = ft records
+foldQ ft fprod fproj fs (Product query query') = fprod (foldQ ft fprod fproj fs query) (foldQ ft fprod fproj fs query')
+foldQ ft fprod fproj fs (Projection f query )  = fproj f (foldQ ft fprod fproj fs query)
+foldQ ft fprod fproj fs (Selection f query)    = fs f (foldQ ft fprod fproj fs query)
+
+tables :: Query a b -> [Table a b]
+tables = foldQ (\rs -> [rs]) (\t1 t2 -> t1 ++ t2) (\f t -> t) (\f t -> t)
+
+table = Projection (\f -> f== "nombre" || f=="apellido") (Selection (conjunct (\r -> any (\(c,v)-> c == "salario" && str2num v > 200) r) (\r -> elem ("genero", "F") r)) (Table personas))
+
+-- , que describe el resultado de ejecutar la query dada.
+execute :: Query a b -> Table a b
+execute = foldQ id product' project select
+
+-- , que describe la query resultante de compactar las selecciones y proyecciones consecutivas
+-- en la query dada.
+compact :: Query a b -> Query a b
+compact = foldQ Table Product (\f q -> simplificarProjection f q) (\f q -> simplificarSelection f q)
+
+simplificarProjection :: (f -> Bool) -> Query a b -> Query a b
+simplificarProjection f (Projection f' q) = Projection (conjunct f f') q
+simplificarProjection f q                 = Projection f q
+
+simplificarSelection :: (Record f v -> Bool) -> Query a b -> Query a b
+simplificarSelection f (Selection f' q) = Selection (conjunct f f') q
+simplificarSelection f q                = Selection f q
+
+personas =  
+            [ 
+              [("nombre","Graciela"),("apellido","H") 
+              ,("edad", "42"),("genero","F"),("salario","120")] 
+            , [("nombre","Alonso"),("apellido","Ch") 
+              ,("edad", "35"),("genero","M"),("salario","250")] 
+            , [("nombre","Adela"),("apellido","G") 
+              ,("edad", "39"),("genero","F"),("salario","430")] 
+            , [("nombre","Fer"),("apellido","R") 
+              ,("edad", "22"),("genero","X"),("salario","100")] 
+            , [("nombre","Felipe"),("apellido","W") 
+              ,("edad", "50"),("genero","M"),("salario","280")] 
+            ]
