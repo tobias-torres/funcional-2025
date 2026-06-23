@@ -638,3 +638,4 @@ personas =
             , [("nombre","Felipe"),("apellido","W") 
               ,("edad", "50"),("genero","M"),("salario","280")] 
             ]
+
