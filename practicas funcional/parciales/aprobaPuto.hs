@@ -141,7 +141,15 @@ type NDec = [DigDec]
 
 data DigDec = D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 deriving (Show)
 
-diez = [D9, D0, D1, D0]
+--      U   D
+diez = [D0, D1]
+
+veinte = [D0,D2]
+
+--             U   D
+veinticinco = [D5, D2]
+
+--                 U   D   C
 trescuatrocinco = [D5, D4, D3]
 
 ddAsInt :: DigDec -> Int
@@ -155,6 +163,18 @@ ddAsInt D6 = 6
 ddAsInt D7 = 7
 ddAsInt D8 = 8
 ddAsInt D9 = 9
+
+ddOfInt :: Int -> DigDec
+ddOfInt 0 = D0
+ddOfInt 1 = D1
+ddOfInt 2 = D2
+ddOfInt 3 = D3
+ddOfInt 4 = D4
+ddOfInt 5 = D5
+ddOfInt 6 = D6
+ddOfInt 7 = D7
+ddOfInt 8 = D8
+ddOfInt 9 = D9
 
 -- c. , que dado un dígito decimal lo transforma en el siguiente según el orden circular dado en la definición.
 nextDD :: DigDec -> DigDec
@@ -199,11 +219,32 @@ succNDec []        = [D1]
 succNDec (D9:ndec) = D0 : succNDec ndec
 succNDec (n:ndec)  = nextDD n : ndec
 
-addNDec  ::  NDec  ->  NDec  ->  NDec
+-- que  describe la representación  decimal  normalizada  de  la  suma  de  los  números 
+-- representados por  los  argumentos.  La  resolución  debe  ser exclusivamente  simbólica,  y  no  debe  utilizar
+-- normalizarND. Se puede suponer como precondición que los argumentos está normalizados
+addNDec :: NDec -> NDec -> NDec
+addNDec ndec []            = ndec
+addNDec [] ndec            = ndec
+addNDec (n:ndec) (m:ndec') = sumarDigitos n m (addNDec ndec ndec')
 
-Dada la siguiente definición 
-type NDec = [DigDec] 
-cuya intención es describir representaciones decimales de números con el dígito 
-menos significativo a la izquierda, y siendo DigDec el tipo definido en el ejercicio 3 
-de la práctica 5. Es recomendable reutilizar las funciones definidas en el ejercicio 
-mencionado
+sumarDigitos :: DigDec -> DigDec -> NDec -> NDec
+sumarDigitos D0 y ndec = y : ndec
+sumarDigitos x y ndec  = succNDec (sumarDigitos (prevDD x) y ndec)
+
+nd2nb :: NDec -> NBin
+nd2nb []   = []
+nd2nb ndec = int2db (evalND ndec)
+
+int2db :: Int -> NBin
+int2db 0 = []
+int2db n = if mod n 2 == 0 
+            then O : int2db (div n 2)
+            else I : int2db (div n 2)
+
+-- type NBin = [DigBin]
+
+-- data DigBin = O | I deriving (Show)
+
+-- nb2nd :: NBin -> NDec
+-- nb2nd 
+
