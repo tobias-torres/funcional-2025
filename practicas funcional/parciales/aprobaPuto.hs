@@ -1,3 +1,5 @@
+import Prelude hiding (map, filter, foldr, recr, foldr1, zipWith, scanr, length,any, all, countBy, partition, zipWith, scanr, takeWhile, take, drop, elemAt)
+
 data N = Z | S N deriving (Show)
 
 dos = S (S Z)
@@ -232,7 +234,6 @@ sumarDigitos D0 y ndec = y : ndec
 sumarDigitos x y ndec  = succNDec (sumarDigitos (prevDD x) y ndec)
 
 nd2nb :: NDec -> NBin
-nd2nb []   = []
 nd2nb ndec = int2db (evalND ndec)
 
 int2db :: Int -> NBin
@@ -241,10 +242,250 @@ int2db n = if mod n 2 == 0
             then O : int2db (div n 2)
             else I : int2db (div n 2)
 
--- type NBin = [DigBin]
+nb2nd :: NBin -> NDec
+nb2nd nbin = int2nd (evalNB nbin)
 
--- data DigBin = O | I deriving (Show)
+int2nd :: Int -> NDec
+int2nd 0 = []
+int2nd n = ddOfInt (mod n 10) : int2nd (div n 10)
 
--- nb2nd :: NBin -> NDec
--- nb2nd 
+-- Ejercicios del TP 9
+
+data Tree a = EmptyT | NodeT a (Tree a) (Tree a) deriving (Show)
+
+arbol = NodeT 10 (NodeT 20 EmptyT EmptyT)
+                 (NodeT 30 (NodeT 44 EmptyT EmptyT) EmptyT)
+
+heightT :: Tree a -> Int
+heightT EmptyT          = 0
+heightT (NodeT x t1 t2) = 1 + max (heightT t1) (heightT t2)
+
+listPerLevel :: Tree a -> [[a]]
+listPerLevel EmptyT         = []
+listPerLevel (NodeT x t t') = [x] : concatPerLevel (listPerLevel t) (listPerLevel t')
+
+concatPerLevel :: [[a]] -> [[a]] -> [[a]]
+concatPerLevel [] yss = yss
+concatPerLevel xss [] = xss
+concatPerLevel (xs:xss) (ys:yss) = (xs ++ ys) : concatPerLevel xss yss
+
+-- x. que describe la lista con los elementos del nivel dado en el árbol dado.
+levelN :: Int -> Tree a -> [a]
+levelN n EmptyT          = []
+levelN 0 (NodeT x _ _)   = [x]
+levelN n (NodeT x t1 t2) = (levelN (n-1) t1) ++ (levelN (n-1) t2)
+
+-- xi. que describe la lista con los elementos de la rama más larga del árbol.
+ramaMasLarga :: Tree a -> [a]
+ramaMasLarga EmptyT         = []
+ramaMasLarga (NodeT x t t') = if (heightT t) > (heightT t') 
+                                then x : ramaMasLarga t
+                                else x : ramaMasLarga t'
+
+-- xii. que describe la lista con todos los caminos existentes en el árbol dado.
+todosLosCaminos :: Tree a -> [[a]]
+todosLosCaminos EmptyT                  = []
+todosLosCaminos (NodeT x EmptyT EmptyT) = [[x]]
+todosLosCaminos (NodeT x t t')          = agregarRaiz x (todosLosCaminos t ++ todosLosCaminos t')
+
+agregarRaiz :: a -> [[a]] -> [[a]]
+agregarRaiz e []       = []
+agregarRaiz e (xs:xss) = (e:xs) : (agregarRaiz e xss)
+
+data AppList a = Single a | Append (AppList a) (AppList a) deriving (Show)
+
+foldAL :: (a -> b) -> (b -> b -> b) -> AppList a -> b
+foldAL fs fa (Single x)      = fs x
+foldAL fs fa (Append ap ap') = fa (foldAL fs fa ap) (foldAL fs fa ap')
+
+recAL :: (a -> b) -> (AppList a -> AppList a -> b -> b -> b) -> AppList a -> b
+recAL fs fa (Single x)      = fs x
+recAL fs fa (Append ap ap') = fa ap ap' (recAL fs fa ap) (recAL fs fa ap')
+
+appendProof = Append (Single 3) (Append (Single 33) (Single 55))
+
+-- , que describe la cantidad de elementos de la lista.
+lenAL :: AppList a -> Int
+lenAL (Single x)      = 1
+lenAL (Append ap ap') = (lenAL ap) + (lenAL ap')
+
+lenAL' :: AppList a -> Int
+lenAL' = foldAL (const 1) (+)
+
+-- , que describe la lista resultante de agregar el elemento dado al principio de la lista dada.
+consAL :: a -> AppList a -> AppList a
+consAL e (Single x)      = Append (Single e) (Single x)
+consAL e (Append ap ap') = Append (consAL e ap) ap'
+
+consAL' :: a -> AppList a -> AppList a
+consAL' e = recAL (\x -> Append (Single e) (Single x)) (\ap ap' appList appList' -> Append appList ap')
+
+-- , que describe el primer elemento de la lista dada.
+headAL :: AppList a -> a
+headAL (Single x)      = x
+headAL (Append ap ap') = (headAL ap)
+
+headAL' :: AppList a -> a
+headAL' = foldAL id (\ap ap' -> ap)
+
+-- -- , que describe la lista resultante de quitar el primer elemento de la lista dada.
+tailAL :: AppList a -> AppList a
+tailAL (Single x)             = error "no se puede sacar"
+tailAL (Append (Single x) ap) = ap
+tailAL (Append ap ap')        = Append (tailAL ap) ap'
+
+tailAL' :: AppList a -> AppList a
+tailAL' = recAL (\x -> error "no se puede sacar elem de una lista vacia") 
+                 (\ap ap' appList appList' -> case ap of
+                                Single _ -> ap'
+                                Append _ _ -> Append appList ap')
+
+-- -- , que describe la lista resultante de agregar el elemento dado al final de la lista dada.
+snocAL :: AppList a -> a -> AppList a
+snocAL (Single x) e      = Append (Single x) (Single e)
+snocAL (Append ap ap') e = Append ap (snocAL ap' e)
+
+snocAL' :: AppList a -> a -> AppList a
+snocAL' = recAL (\x e -> Append (Single x) (Single e))
+                 (\ap ap' appList appList' e -> Append ap (appList' e))
+
+-- -- , que describe el último elemento de la lista dada.
+lastAL :: AppList a -> a
+lastAL (Single x)             = x
+lastAL (Append ap ap')        = lastAL ap'
+
+lastAL' :: AppList a -> a
+lastAL' = foldAL id (const id)
+
+-- -- , que describe la lista dada sin su último elemento.
+initAL :: AppList a -> AppList a
+initAL (Single x)             = error "Lista vacia"
+initAL (Append ap (Single x)) = ap 
+initAL (Append ap ap')        = Append ap (initAL ap')
+
+initAL' :: AppList a -> AppList a
+initAL' = recAL (\x -> error "no se puede sacar elem de una lista vacia")
+               (\ap ap' appList appList' -> case ap' of
+                                            Single _ -> ap
+                                            Append _ _ -> Append ap appList')
+
+-- , que describe la lista dada con sus elementos en orden inverso.
+reverseAL :: AppList a -> AppList a
+reverseAL (Single x)      = (Single x)
+reverseAL (Append ap ap') = Append (reverseAL ap') (reverseAL ap)
+
+reverseAL' :: AppList a -> AppList a
+reverseAL' = foldAL Single (\ap ap' -> Append ap' ap)
+
+-- -- , que indica si el elemento dado se encuentra en la lista dada.
+elemAL :: Eq a => a -> AppList a -> Bool
+elemAL e (Single x)      = e == x
+elemAL e (Append ap ap') = elemAL e ap || elemAL e ap'
+
+elemAL' :: Eq a => a -> AppList a -> Bool
+elemAL' = flip (foldAL (\x e -> e == x) 
+                       (\ap ap' e -> ap e || ap' e))
+
+-- -- , quedescribe el resultado de agregar los elementos de la primera listaadelante de los elementos de la segunda. NOTA: buscar la manera más eficiente de hacerlo.
+appendAL :: AppList a -> AppList a -> AppList a
+appendAL = Append
+
+-- -- , que describe la representación lineal de la lista dada.
+appListToList :: AppList a -> [a]
+appListToList (Single x)      = [x]
+appListToList (Append ap ap') = appListToList ap ++ appListToList ap'
+
+appListToList' :: AppList a -> [a]
+appListToList' = foldAL (\x -> [x])
+                        (++)
+
+-- Practica 11
+
+data Pizza = Prepizza | Capa Ingrediente Pizza deriving (Show)
+
+data Ingrediente = Aceitunas Int | Anchoas | Cebolla | Jamon | Queso | Salsa deriving (Show)
+
+pz1 = Capa Salsa (Capa Anchoas Prepizza) 
+pz2 = Capa Cebolla (Capa Queso (Capa Jamon Prepizza))
+pz3 = Capa Cebolla (Capa (Aceitunas 10) (Capa Jamon Prepizza))
+
+foldP :: (Ingrediente -> b -> b) -> b -> Pizza -> b
+foldP fc fp (Capa i p) = fc i (foldP fc fp p)
+foldP fc fp Prepizza   = fp 
+
+cantidadCapasQueCumplen :: (Ingrediente -> Bool) -> Pizza -> Int 
+cantidadCapasQueCumplen p = foldP (\i n -> if p i then 1 + n else n) 0
+
+conCapasTransformadas :: (Ingrediente -> Ingrediente) -> Pizza -> Pizza 
+conCapasTransformadas f = foldP (\i p -> Capa (f i) p) Prepizza
+
+soloLasCapasQue :: (Ingrediente -> Bool) -> Pizza -> Pizza
+soloLasCapasQue p = foldP (\i pzz -> if (p i) then Capa i pzz else pzz) Prepizza
+
+-----------------------------------------------------------------------------------
+
+sinLactosa :: Pizza -> Pizza
+sinLactosa = soloLasCapasQue (not . esQueso)
+
+esQueso :: Ingrediente -> Bool
+esQueso Queso = True
+esQueso _     = False
+
+aptaIntolerantesLactosa :: Pizza -> Bool 
+-- aptaIntolerantesLactosa pz = (cantidadCapasQueCumplen esQueso pz) == 0
+-- aptaIntolerantesLactosa pz = (==) (cantidadCapasQueCumplen esQueso pz) 0
+-- aptaIntolerantesLactosa pz = (==0) (cantidadCapasQueCumplen esQueso pz)
+aptaIntolerantesLactosa = (==0) . (cantidadCapasQueCumplen esQueso)
+
+cantidadDeQueso :: Pizza -> Int 
+cantidadDeQueso = cantidadCapasQueCumplen esQueso
+
+conElDobleDeAceitunas :: Pizza -> Pizza
+conElDobleDeAceitunas = conCapasTransformadas duplicarAceitunas
+
+duplicarAceitunas :: Ingrediente -> Ingrediente
+duplicarAceitunas (Aceitunas n) = Aceitunas (2*n)
+duplicarAceitunas i             = i
+
+-----------------------------------------------------------------------------------
+
+sinLactosa' :: Pizza -> Pizza
+sinLactosa' = foldP (\i p -> if (not (esQueso i)) then Capa i p else p) Prepizza
+
+aptaIntolerantesLactosa' :: Pizza -> Bool
+aptaIntolerantesLactosa' = foldP (\i b -> not (esQueso i) && b) True
+
+cantidadDeQueso' :: Pizza -> Int
+cantidadDeQueso' = foldP (\i n -> if esQueso i then 1 + n else n) 0
+
+conElDobleDeAceitunas' :: Pizza -> Pizza
+-- conElDobleDeAceitunas' = foldP (\i p -> Capa (duplicarAceitunas i) p) Prepizza
+conElDobleDeAceitunas' = foldP (Capa . duplicarAceitunas) Prepizza
+
+-----------------------------------------------------------------------------------
+
+cantidadAceitunas :: Pizza -> Int 
+cantidadAceitunas = foldP (\i n -> nroAceitunas i + n) 0
+                          
+nroAceitunas :: Ingrediente -> Int
+nroAceitunas (Aceitunas n) = n
+nroAceitunas m             = 0
+
+capasQueCumplen :: (Ingrediente -> Bool) -> Pizza -> [Ingrediente]
+capasQueCumplen f = foldP (\i igs -> if f i then i : igs else igs) []
+
+conDescripcionMejorada :: Pizza -> Pizza 
+conDescripcionMejorada = foldP mejorarDescripcion Prepizza
+
+mejorarDescripcion :: Ingrediente -> Pizza -> Pizza
+mejorarDescripcion (Aceitunas n) (Capa (Aceitunas m) p) = Capa (Aceitunas (n + m)) p
+mejorarDescripcion i p = Capa i p
+
+-- , que agrega las capas de la primera pizza sobre la segunda
+conCapasDe :: Pizza -> Pizza -> Pizza
+conCapasDe = flip (foldP Capa) 
+
+primerasNCapas :: Int -> Pizza -> Pizza
+primerasNCapas = flip (foldP (\i p n -> if n == 0 then Prepizza else Capa i (p (n - 1)) )
+                       (const Prepizza))
 
