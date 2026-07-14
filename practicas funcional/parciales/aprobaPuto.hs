@@ -1,4 +1,4 @@
-import Prelude hiding (map, filter, foldr, recr, foldr1, zipWith, scanr, length,any, all, countBy, partition, zipWith, scanr, takeWhile, take, drop, elemAt)
+import Prelude hiding (map, filter, recr, foldr1, zipWith, scanr, length,any, all, countBy, partition, zipWith, scanr, takeWhile, take, drop, elemAt)
 
 data N = Z | S N deriving (Show)
 
@@ -489,3 +489,50 @@ primerasNCapas :: Int -> Pizza -> Pizza
 primerasNCapas = flip (foldP (\i p n -> if n == 0 then Prepizza else Capa i (p (n - 1)) )
                        (const Prepizza))
 
+--------------------------------------------------------------------------
+
+
+sum :: [Int] -> Int 
+-- sum = foldr (\x n -> x + n) 0
+sum = foldr (+) 0
+
+length :: [a] -> Int
+-- length = foldr (\x n -> 1 + n) 0
+length = foldr (const (1+)) 0
+
+map :: (a -> b) -> [a] -> [b] 
+map = flip (foldr (\x xs f -> f x : xs f) (const []))
+
+filter :: (a -> Bool) -> [a] -> [a]
+filter = flip (foldr (\x xs p -> if p x then x : xs p else xs p) (const []))
+
+find :: (a -> Bool) -> [a] -> Maybe a 
+find = flip (foldr (\x m p -> if p x then Just x else m p ) (const Nothing))
+
+any :: (a -> Bool) -> [a] -> Bool 
+any = flip (foldr (\x b p -> p x || b p ) (const False))
+
+all :: (a -> Bool) -> [a] -> Bool 
+all = flip (foldr (\x b p -> p x && b p) (const True))
+
+countBy :: (a -> Bool) -> [a] -> Int
+countBy = flip (foldr (\x n p -> if p x then 1 + n p else n p) (const 0))
+
+partition :: (a -> Bool) -> [a] -> ([a], [a]) 
+-- partition p = foldr (\x par -> if p x then ( x : fst par, snd par ) else (fst par, x : snd par)) ([],[])
+partition = flip (foldr (\x par p -> if p x then ( x : fst (par p), snd (par p) ) else (fst (par p), x : snd (par p))) (const ([],[])))
+
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith = flip (foldr (\x xs f ys -> case ys of
+                                [] -> []
+                                (y:ys') -> f x y : xs f ys') (\_ _ -> []))
+
+-- scanr :: (a -> b -> b) -> b -> [a] -> [b] 
+
+-- takeWhile :: (a -> Bool) -> [a] -> [a]
+
+-- take :: Int -> [a] -> [a] 
+
+-- drop :: Int -> [a] -> [a] 
+
+-- elemAt :: Int -> [a] -> a
