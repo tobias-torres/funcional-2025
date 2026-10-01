@@ -113,3 +113,76 @@ planillaDeIntegrantes :: Equipo -> Planilla
 planillaDeIntegrantes (Becario n)               = Fin
 planillaDeIntegrantes (Investigador n e1 e2 e3) = Registro n (juntarPlanillas (planillaDeIntegrantes e1) (juntarPlanillas (planillaDeIntegrantes e2) (planillaDeIntegrantes e3)))
 
+
+data Dungeon a = Habitacion a | Pasaje (Maybe a) (Dungeon a) | Bifurcacion (Maybe a) (Dungeon a) (Dungeon a)
+
+-- 1
+
+-- Si h es una habitacion, entonces (Habitacion h) pertenece al conjunto Dungeon a.
+-- si m es de tipo Maybe a y d es un Dungeon a, entonces (Pasaje m d) pertenece al conjunto Dungeon a.
+-- si m es de tipo Maybe a y d1, d2 son de tipo Dungeon a, entonces (Bifurcacion m d1 d2) pertenece al conjunto Dungeon a.
+
+-- 2
+
+-- f (Habitacion h) = ...
+-- f (Pasaje m d) = ... f d
+-- f (Bifurcacion m d1 d2) = ... f d1 ... f d2
+
+dungeon = Bifurcacion (Just "Puerta") 
+            (Pasaje Nothing 
+                (Habitacion "Sala de entrada")) 
+            (Bifurcacion Nothing 
+                (Habitacion "Sala de tesoros") 
+                (Pasaje (Just "Puerta secreta") 
+                    (Habitacion "Sala de monstruos")))
+
+-- a. cantidadDeBifurcaciones, que describe la cantidad de bifurcaciones de un dungeon dado.
+
+cantidadDeBifurcaciones :: Dungeon a -> Int
+cantidadDeBifurcaciones (Habitacion x) = 0
+cantidadDeBifurcaciones (Pasaje m d) = cantidadDeBifurcaciones d
+cantidadDeBifurcaciones (Bifurcacion m d1 d2) = 1 + cantidadDeBifurcaciones d1 + cantidadDeBifurcaciones d2
+
+-- b. cantidadDePuntosInteresantes, que describe la cantidad de puntos interesantes de un dungeon dado.
+-- Los puntos interesantes son los lugares donde puede aparecer un elemento.
+cantidadDePuntosInteresantes :: Dungeon a -> Int
+cantidadDePuntosInteresantes (Habitacion x) = 0
+cantidadDePuntosInteresantes (Pasaje m d) = chequearPunto m + cantidadDePuntosInteresantes d
+cantidadDePuntosInteresantes (Bifurcacion m d1 d2) = chequearPunto m + cantidadDePuntosInteresantes d1 + cantidadDePuntosInteresantes d2
+
+chequearPunto :: Maybe a -> Int
+chequearPunto (Just _) = 1
+chequearPunto Nothing = 0
+
+-- c. cantidadDePuntosVacios, que describe la cantidad de puntos interesantes del dungeon dado en las que no hay ningún elemento.
+cantidadDePuntosVacios :: Dungeon a -> Int
+cantidadDePuntosVacios (Habitacion x) = 0
+cantidadDePuntosVacios (Pasaje m d) = puntoVacio m + cantidadDePuntosVacios d
+cantidadDePuntosVacios (Bifurcacion m d1 d2) = puntoVacio m + cantidadDePuntosVacios d1 + cantidadDePuntosVacios d2
+
+puntoVacio :: Maybe a -> Int
+puntoVacio Nothing  = 1
+puntoVacio (Just _) = 0
+
+-- d. cantidadDePuntosCon, que dado un elemento y un dungeon, describe la cantidad de puntos interesantes del dungeon en 
+-- las que se encuentra el elemento dado.
+cantidadDePuntosCon :: Eq a => a -> Dungeon a -> Int
+cantidadDePuntosCon e (Habitacion x)        = analizar e x
+cantidadDePuntosCon e (Pasaje m d)          = sumarSiSonIguales e m + cantidadDePuntosCon e d
+cantidadDePuntosCon e (Bifurcacion m d1 d2) = sumarSiSonIguales e m + cantidadDePuntosCon e d1 + cantidadDePuntosCon e d2
+
+analizar :: Eq a => a -> a -> Int
+analizar x x' = if x == x' then 1 else 0
+
+sumarSiSonIguales :: Eq a => a -> Maybe a -> Int
+sumarSiSonIguales x (Just x') = analizar x x'
+sumarSiSonIguales _ Nothing   = 0
+
+-- e. esLineal, que indica si no hay bifurcaciones en un dungeon dado.
+esLineal :: Dungeon a -> Bool
+esLineal (Habitacion x)        = True
+esLineal (Pasaje m d)          = True && esLineal d
+esLineal (Bifurcacion m d1 d2) = False
+
+-- f. llenoDe, que dado un elemento y un dungeon, indica si el elemento se
+-- encuentra en todas las posiciones del dungeon
